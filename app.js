@@ -107,8 +107,28 @@ select.addEventListener("change", async function () {
   try {
     const searchResults = await search(selectedOption, query);
     console.log(searchResults);
+
+    const resultsContainer = document.querySelector(".results-container");
+    // Clear the search results container
+
     for (let i = 0; i < 10; i++) {
-      console.log(searchResults[i].name);
+      const result = document.createElement("div");
+      result.classList.add("result"); //  dynamically adding class names to div
+
+      // create an image element for the search result
+      const resultImg = document.createElement("img");
+      resultImg.src = searchResults[i].album.images[0].url;
+      result.appendChild(resultImg);
+      resultImg.classList.add("searchedImg"); //  dynamically adding class names to img
+
+      // create a paragraph element for the search result name
+      const resultName = document.createElement("p");
+      resultName.textContent = searchResults[i].name;
+      result.appendChild(resultName);
+      resultName.classList.add("searchedSongName"); //  dynamically adding class names to p tags
+
+      // append the search result to the results container
+      resultsContainer.appendChild(result);
     }
   } catch (err) {
     console.log("COUDNT FIND WHAT YOU WERE LOOKING FOR");

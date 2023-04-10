@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="stylesheet" href="app.css" />
   </head>
 
   <body>
@@ -17,8 +18,13 @@
         <option value="playlist">playlist</option>
         <option value="track">track</option>
       </select>
-      <div class="search-results"></div>
-      <!-- this div appends the search results thought js -->
+      <!-- <div class="search-results">
+        <img src="" alt="searched-img" />
+        <p class="searched-result-name"></p>
+      </div> -->
+      <div class="results-container">
+        <!-- Results will be added dynamically through JavaScript -->
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
