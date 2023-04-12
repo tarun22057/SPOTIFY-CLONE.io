@@ -1,7 +1,28 @@
 // GET THE ACCESS TOKEN: The access token is a string which contains the credentials and permissions that can be used to access a given resource(e.g artists, albums or tracks) or user 's data (e.g your profile or your playlists).
 
-const clientId = "1e7f5060110348619d19e187105ce4ce";
-const clientSecret = "cad31f8d3e7c43c6baf0987c39b41d39";
+// const getAllScopes = () => {
+//     const scopes = [
+//         "user-read-private",
+//         "user-read-email",
+//         "user-read-playback-state",
+//         "user-read-currently-playing",
+//         "user-read-recently-played",
+//         "user-modify-playback-state",
+//         "user-library-read",
+//         "user-library-modify",
+//         "playlist-read-private",
+//         "playlist-read-collaborative",
+//         "playlist-modify-public",
+//         "playlist-modify-private",
+//         "user-read-playback-position",
+//         "user-read-voice-state",
+//         "user-read-private",
+//     ];
+//     return scopes.join(" ");
+// };
+
+const clientId = "3cf39821e56e4a2ead03561abe73f305"; //"8facece69f694f1597ac5242d3e2b5d6";
+const clientSecret = "b608caec94634121a7be8fba10db22c3"; //"eb80ba97247e4935837444127db78e3a";
 
 const getAccessToken = async(clientId, clientSecret) => {
     const authString = `${clientId}:${clientSecret}`;
@@ -16,60 +37,20 @@ const getAccessToken = async(clientId, clientSecret) => {
 
     const data = new URLSearchParams();
     data.append("grant_type", "client_credentials");
-
     try {
         const response = await axios.post(
             "https://accounts.spotify.com/api/token",
             data,
             config
         );
-        //console.log(response); //logs the full return from the api call
+        console.log(response); //logs the full return from the api call
         return response.data.access_token;
-        //     return "BQCDNwKwBmdzOcehxf0m96395cQnije5hot80zZEOeormaZLW2rxb4ltRik15QN3YKSYMHrayk38dQxtWZB6XRImzBUKYWALFNv6LoFXsyPsmCRyHWwtQ0GdlmIEUoqNKYFUAFk1SJ92pM1IWIaGJ6rRsp6fiaToPlgXNInPqgfzEYPqFKQ0xNhqCY1tmnZcCVinMCIlc0_BROxJJICqxZMlGgf6cnLNNFkAK9GU2kf3-ksy6PZZI_Jw2C9A-HOkZzbyc2BvEEZlP6cYHVEXhfcXetldrwieDkDraBauWhYe4d8BSNNHDstAmgS_uRZ-hzZm8rs4VpqMTbsVkfZ8gBbzWUIS49GBKvY7cIG84aw";
     } catch (error) {
         console.error(error);
         throw new Error("Failed to get access token");
     }
 };
-
-//Now lets get the Artists info
-//for that we need the artist id
-// get artist endpoint : https://api.spotify.com/v1/artists/{id}
-// our API call must include access_token we acquired above using the authorization header
-
-// const getArtist = async () => {
-//   const accessToken = await getAccessToken(clientId, clientSecret);
-//   const id = "0TnOYISbd1XYRBk9myaseg";
-
-//   const configArtist = {
-//     headers: {
-//       Authorization: `Bearer ${accessToken}`,
-//     },
-//   };
-//   try {
-//     const responseArtist = await axios.get(
-//       `https://api.spotify.com/v1/artists/${id}`,
-//       configArtist
-//     );
-//     console.log(responseArtist);
-//     return responseArtist;
-//   } catch (error) {
-//     //   console.error(error);
-//     throw new Error("Failed to get access artist");
-//   }
-// };
-
-// const btn = document.querySelector("button");
-// btn.addEventListener("click", async() => {
-//     const artist = await getArtist();
-//     console.log(artist.data.name);
-// });
-
-// we need a method to get the id of the artist so that we can directly pass it to the methods paramters
-
-// searching for artists albums tracks etc
-// ENDPOINT : https://api.spotify.com/v1/search
-
+getAccessToken(clientId, clientSecret);
 const search = async(selectedOption, query) => {
     const accessToken = await getAccessToken(clientId, clientSecret);
     const configSearches = {
@@ -136,78 +117,26 @@ select.addEventListener("change", async function() {
     }
 });
 
-// task for tomorrow
-// -- > see how to actually play the song on clicking
-// -- > see how the dynamic carosel and other shit is implemented
+//unauthorized to get the email and user detail
 
-window.onSpotifyPlayerAPIReady = () => {
-    const token = getAccessToken(clientId, clientSecret);
-    const player = new Spotify.Player({
-        name: "Web Playback SDK Template",
-        getOAuthToken: (cb) => {
-            cb(token);
-        },
-    });
+// const checkPremium = async() => {
+//     const accessToken = await getAccessToken(clientId, clientSecret);
 
-    // Error handling
-    player.on("initialization_error", (e) => console.error(e));
-    player.on("authentication_error", (e) => console.error(e));
-    player.on("account_error", (e) => console.error(e));
-    player.on("playback_error", (e) => console.error(e));
+//     const config = {
+//         headers: {
+//             Authorization: `Bearer ${accessToken}`,
+//         },
+//     };
 
-    // Playback status updates
-    player.on("player_state_changed", (state) => {
-        console.log(state);
-        $("#current-track").attr(
-            "src",
-            state.track_window.current_track.album.images[0].url
-        );
-        $("#current-track-name").text(state.track_window.current_track.name);
-    });
+//     try {
+//         const response = await axios.get("https://api.spotify.com/v1/me", config);
 
-    // Ready
-    player.on("ready", (data) => {
-        console.log("Ready with Device ID", data.device_id);
-
-        // Play a track using our new device ID
-        play(data.device_id);
-    });
-
-    // Connect to the player!
-    player.connect();
-};
-
-// Play a specified track on the Web Playback SDK's device ID
-function play(device_id) {
-    $.ajax({
-        url: "https://api.spotify.com/v1/me/player/play?device_id=" + device_id,
-        type: "PUT",
-        data: '{"uris": ["spotify:track:5ya2gsaIhTkAuWYEMB0nw5"]}',
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader("Authorization", "Bearer " + token);
-        },
-        success: function(data) {
-            console.log(data);
-        },
-    });
-}
-
-// checks whether you acocunt is premium or not
-
-const prem = async() => {
-    const accessToken = await getAccessToken(clientId, clientSecret);
-
-    const response = await fetch("https://api.spotify.com/v1/me", {
-        headers: {
-            Authorization: "Bearer " + accessToken,
-        },
-    });
-
-    const data = await response.json();
-    console.log(data);
-    if (data.product === "premium") {
-        console.log("User has a premium subscription!");
-    } else {
-        console.log("User does not have a premium subscription.");
-    }
-};
+//         if (response.data.product === "premium") {
+//             console.log("User has a premium subscription!");
+//         } else {
+//             console.log("User does not have a premium subscription.");
+//         }
+//     } catch (error) {
+//         console.error(error);
+//     }
+// };
