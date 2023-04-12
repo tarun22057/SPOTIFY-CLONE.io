@@ -79,13 +79,14 @@ time,
 mark,
 audio,
 video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
 }
+
 
 /* HTML5 display-role reset for older browsers */
 
@@ -100,60 +101,60 @@ hgroup,
 menu,
 nav,
 section {
-  display: block;
+    display: block;
 }
 
 body {
-  line-height: 1;
+    line-height: 1;
 }
 
 ol,
 ul {
-  list-style: none;
+    list-style: none;
 }
 
 blockquote,
 q {
-  quotes: none;
+    quotes: none;
 }
 
 blockquote:before,
 blockquote:after,
 q:before,
 q:after {
-  content: "";
-  content: none;
+    content: "";
+    content: none;
 }
 
 table {
-  border-collapse: collapse;
-  border-spacing: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
 }
 
 .results-container {
-  max-height: 100vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  padding: 1.5em;
+    /* max-height: 100vh; */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5em;
 }
 
 .searchedImg {
-  /*  dynamically added class name js 122 */
-  height: 4em;
-  width: 4em;
+    /*  dynamically added class name js-122 */
+    height: 4em;
+    width: 4em;
 }
 
 .searchedSongName {
-  /*  dynamically added class name js 128 */
-  font: 100;
+    /*  dynamically added class name js line-128 */
+    font: 100;
 }
 
 .result {
-  display: flex;
-  font-display: column;
-  align-items: center;
-  gap: 4em;
-  padding: 1em;
-  border: 1px solid black;
+    display: flex;
+    font-display: column;
+    align-items: center;
+    gap: 4em;
+    padding: 1em;
+    border: 1px solid black;
 }
