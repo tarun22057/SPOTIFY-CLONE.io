@@ -131,30 +131,106 @@ table {
     border-spacing: 0;
 }
 
+textarea:focus,
+input:focus {
+    outline: none;
+}
+
+body {
+    /* color: white; */
+    display: flex;
+    flex-direction: row;
+    font-family: "Roboto", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.left-side {
+    /* border: 1px solid blue; */
+    width: 15%;
+}
+
+.right-side-main {
+    /* background-color: #252323; */
+    width: 85%;
+    /* border: 1px solid black; */
+    padding: 1.3em 0 0 1em;
+}
+
+.search-bar {
+    border: none;
+    width: 90%;
+}
+
+.search-bar-fa {
+    /*search bar + icon*/
+    border: 1.3px solid black;
+    width: 28%;
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    padding: 1em;
+    border-radius: 50px;
+}
+
+
+/* .search-bar-fa:focus {
+    border: 2px solid black;
+} */
+
 .results-container {
-    /* max-height: 100vh; */
-    overflow: hidden;
+    width: 100%;
+    /* border: 10px solid green; */
+}
+
+
+/*these are the dynamically added classes from js*/
+
+svg {
+    height: 20px;
+    width: 20px;
+}
+
+.result-div {
+    z-index: 10;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1em 5em 45em 30em 10em;
+    gap: 1em;
+    padding: 0.5em 0.75em;
+}
+
+.result-number {
+    /* border: 1px solid black; */
+}
+
+.searched-img {
+    /* border: 1px solid red; */
+    width: 40px;
+    height: 40px;
+    padding: 0.3em;
+}
+
+.searched-song-name {
+    /* border: 1px solid green; */
     display: flex;
     flex-direction: column;
-    padding: 1.5em;
+    gap: 0.65em;
 }
 
-.searchedImg {
-    /*  dynamically added class name js-122 */
-    height: 4em;
-    width: 4em;
+.searched-song-album {
+    /* border: 1px solid red; */
 }
 
-.searchedSongName {
-    /*  dynamically added class name js line-128 */
-    font: 100;
+.searched-song-time {
+    /* border: 1px solid red; */
+    text-align: center;
 }
 
-.result {
-    display: flex;
-    font-display: column;
-    align-items: center;
-    gap: 4em;
-    padding: 1em;
-    border: 1px solid black;
+.cross-button {
+    background: none;
+    border: none;
+    font-weight: bold;
+    font-size: 18px;
+    color: black;
 }
