@@ -61,7 +61,7 @@ const search = async(selectedOption, query) => {
             q: query,
             type: `${selectedOption}`,
             market: "US",
-            limit: 10,
+            limit: 20,
             offseet: 0,
         },
     };
@@ -81,7 +81,6 @@ const search = async(selectedOption, query) => {
 
 // const select = document.querySelector("#select-options");
 const searchBar = document.querySelector(".search-bar");
-let creatingXinSearch = 0; //this is to create that X in search bar when the user types a single word it appears in the search bar
 
 searchBar.addEventListener("input", async function() {
     // const selectedOption = this.value; if you want to search for albums etc use the select option in the html
@@ -89,26 +88,6 @@ searchBar.addEventListener("input", async function() {
     const query = this.value; //gets the value from the serach bar
     // console.log(query);
     // console.log(selectedOption);
-
-    creatingXinSearch++;
-    console.log(creatingXinSearch);
-    //only once the button should be appned to the
-    const crossButton = document.createElement("button");
-    crossButton.innerText = "X";
-    crossButton.classList.add("cross-button");
-    const searchBarFa = document.querySelector(".search-bar-fa");
-    if (creatingXinSearch === 1) {
-        searchBarFa.appendChild(crossButton);
-        creatingXinSearch = 999;
-        console.log(creatingXinSearch);
-    }
-
-    const cross = document.querySelector(".cross-button");
-    cross.addEventListener("click", function() {
-        searchBar.value = "";
-        // crossButton.innerText = "";
-    });
-
     try {
         const searchResults = await search(selectedOption, query);
         console.log(searchResults);
@@ -117,7 +96,8 @@ searchBar.addEventListener("input", async function() {
 
         // Clear the search results container
         resultsContainer.innerHTML = "";
-        for (let i = 0; i < 10; i++) {
+
+        for (let i = 0; i < 20; i++) {
             const result = document.createElement("div");
             result.classList.add("result-div"); //  dynamically adding class names to div
 
@@ -197,6 +177,99 @@ function millisToMinutesAndSeconds(millis) {
 //     }
 // };
 
-// --> improve the search bar that is if you change a word the list changes and add a cancel button to close the list
-// --> start buildind the UI (recently played , playlist liked songs etc ...)
-// -->
+const searchBarFa = document.querySelector(".search-bar-fa");
+let crossButton, headings;
+
+searchBar.addEventListener("input", function() {
+    // Check if search bar is not empty
+    if (searchBar.value.trim().length > 0) {
+        // Create the cross button and add it to the search bar
+        if (!crossButton) {
+            crossButton = document.createElement("button");
+            crossButton.innerText = "X";
+            crossButton.classList.add("cross-button");
+            searchBarFa.appendChild(crossButton);
+        }
+
+        // Create the headings row and add it to the search bar container
+        if (!headings) {
+            headings = document.createElement("div");
+            headings.classList.add("headings");
+
+            const sNo = document.createElement("div");
+            sNo.innerText = "#";
+            headings.appendChild(sNo);
+
+            const sTitle = document.createElement("div");
+            sTitle.innerText = "Title";
+            headings.appendChild(sTitle);
+
+            const sEmpty = document.createElement("div");
+            sEmpty.innerText = "";
+            headings.appendChild(sEmpty);
+
+            const sAlbum = document.createElement("div");
+            sAlbum.innerText = "Album";
+            headings.appendChild(sAlbum);
+
+            const sDuration = document.createElement("div");
+            sDuration.innerText = "Duration";
+            headings.appendChild(sDuration);
+
+            const searchBarContainer = document.querySelector(
+                ".search-bar-container"
+            );
+            searchBarContainer.appendChild(headings);
+        }
+    } else {
+        // Remove the cross button from the search bar
+        if (crossButton) {
+            searchBarFa.removeChild(crossButton);
+            crossButton = null;
+        }
+
+        // Remove the headings row from the search bar container
+        if (headings) {
+            const searchBarContainer = document.querySelector(
+                ".search-bar-container"
+            );
+            searchBarContainer.removeChild(headings);
+            headings = null;
+        }
+    }
+});
+
+searchBar.addEventListener("blur", function() {
+    // Remove the cross button and headings when search bar loses focus
+    if (crossButton) {
+        searchBarFa.removeChild(crossButton);
+        crossButton = null;
+    }
+
+    if (headings) {
+        const searchBarContainer = document.querySelector(".search-bar-container");
+        searchBarContainer.removeChild(headings);
+        headings = null;
+    }
+});
+
+searchBarFa.addEventListener("click", function(e) {
+    // Remove the cross button and headings when cross button is clicked
+    if (e.target.classList.contains("cross-button")) {
+        searchBar.value = "";
+        searchBar.focus();
+
+        if (crossButton) {
+            searchBarFa.removeChild(crossButton);
+            crossButton = null;
+        }
+
+        if (headings) {
+            const searchBarContainer = document.querySelector(
+                ".search-bar-container"
+            );
+            searchBarContainer.removeChild(headings);
+            headings = null;
+        }
+    }
+});
