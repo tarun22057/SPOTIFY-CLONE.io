@@ -137,23 +137,27 @@ input:focus {
 }
 
 body {
-    /* color: white; */
+    color: white;
+    /* border: 10px solid red; */
     display: flex;
     flex-direction: row;
-    font-family: "Roboto", sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-size: 0.8rem;
     font-weight: 600;
+    height: 100%;
 }
 
 .left-side {
     /* border: 1px solid blue; */
+    background-color: #121212;
     width: 15%;
 }
 
 .right-side-main {
-    /* background-color: #252323; */
+    background-color: #232323;
     width: 85%;
-    /* border: 1px solid black; */
+    /* border: 10px solid green; */
+    height: 100%;
     padding: 1.3em 0 0 1em;
 }
 
@@ -171,7 +175,15 @@ body {
     align-items: center;
     padding: 1em;
     border-radius: 50px;
+    background-color: white;
 }
+
+
+/* .search-bar-container {
+    border: 1px solid green;
+    position: fixed;
+    width: 100%;
+} */
 
 
 /* .search-bar-fa:focus {
@@ -200,9 +212,19 @@ svg {
     padding: 0.5em 0.75em;
 }
 
-.result-number {
-    /* border: 1px solid black; */
+.headings {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1em 5em 45em 30em 10em;
+    padding: 1em 0.75em;
+    gap: 1em;
+    border-bottom: 1px solid white;
 }
+
+
+/* .result-number {
+    border: 1px solid black;
+} */
 
 .searched-img {
     /* border: 1px solid red; */
@@ -218,9 +240,10 @@ svg {
     gap: 0.65em;
 }
 
-.searched-song-album {
-    /* border: 1px solid red; */
-}
+
+/* .searched-song-album {
+    border: 1px solid red;
+} */
 
 .searched-song-time {
     /* border: 1px solid red; */
