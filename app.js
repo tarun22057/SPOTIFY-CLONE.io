@@ -248,6 +248,7 @@ searchBar.addEventListener("blur", function() {
 });
 
 searchBarFa.addEventListener("click", function(e) {
+    searchBarFa.classList.add("active"); //changes border color to greens showing that search bar is selected
     // Remove the cross button and headings when cross button is clicked
     if (e.target.classList.contains("cross-button")) {
         searchBar.value = "";
@@ -266,4 +267,21 @@ searchBarFa.addEventListener("click", function(e) {
             headings = null;
         }
     }
+});
+
+// focus on search-bar-fa when search is clicked on left-side container
+const searchLink = document.querySelector(".search-link");
+
+// Add click event listener to the search link
+searchLink.addEventListener("click", (e) => {
+    e.preventDefault(); // Prevent the link from navigating to the href value
+
+    searchBar.focus(); // Focus the search bar element
+
+    searchBarFa.classList.add("active"); // Add active class to the search link
+});
+
+// Add blur event listener to the search bar element
+searchBar.addEventListener("blur", () => {
+    searchBarFa.classList.remove("active"); // Remove active class from the search link
 });

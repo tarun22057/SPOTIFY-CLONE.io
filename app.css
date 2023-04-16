@@ -136,6 +136,18 @@ input:focus {
     outline: none;
 }
 
+a {
+    color: rgb(159, 159, 159);
+    text-decoration: none;
+    font-size: 0.65rem;
+    letter-spacing: 0.1rem;
+}
+
+a:hover {
+    color: white;
+    transition: color 0.25s ease;
+}
+
 body {
     color: white;
     /* border: 10px solid red; */
@@ -151,10 +163,20 @@ body {
     /* border: 1px solid blue; */
     background-color: #121212;
     width: 15%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #121212;
+    color: white;
+    z-index: 1;
+    overflow-y: hidden;
 }
 
 .right-side-main {
     background-color: #232323;
+    position: relative;
+    margin-left: 15%;
     width: 85%;
     /* border: 10px solid green; */
     height: 100%;
@@ -176,6 +198,10 @@ body {
     padding: 1em;
     border-radius: 50px;
     background-color: white;
+}
+
+.active {
+    border: 2px solid #09ec58;
 }
 
 
@@ -256,4 +282,25 @@ svg {
     font-weight: bold;
     font-size: 18px;
     color: black;
+}
+
+.logo {
+    /* border: 1px solid red; */
+    padding: 1em 0.2em 0.5em 2em;
+    display: flex;
+    align-items: center;
+}
+
+.menu {
+    /* border: 1px solid green; */
+    display: flex;
+    flex-direction: column;
+    padding: 1em 0.2em 0.5em 2em;
+}
+
+.menu a {
+    /* border: 1px solid yellow; */
+    display: flex;
+    align-items: center;
+    gap: 1em;
 }
