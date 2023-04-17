@@ -1,28 +1,6 @@
-// GET THE ACCESS TOKEN: The access token is a string which contains the credentials and permissions that can be used to access a given resource(e.g artists, albums or tracks) or user 's data (e.g your profile or your playlists).
-
-// const getAllScopes = () => {
-//     const scopes = [
-//         "user-read-private",
-//         "user-read-email",
-//         "user-read-playback-state",
-//         "user-read-currently-playing",
-//         "user-read-recently-played",
-//         "user-modify-playback-state",
-//         "user-library-read",
-//         "user-library-modify",
-//         "playlist-read-private",
-//         "playlist-read-collaborative",
-//         "playlist-modify-public",
-//         "playlist-modify-private",
-//         "user-read-playback-position",
-//         "user-read-voice-state",
-//         "user-read-private",
-//     ];
-//     return scopes.join(" ");
-// };
-
-const clientId = "3cf39821e56e4a2ead03561abe73f305"; //"8facece69f694f1597ac5242d3e2b5d6";
-const clientSecret = "b608caec94634121a7be8fba10db22c3"; //"eb80ba97247e4935837444127db78e3a";
+const clientId = "8facece69f694f1597ac5242d3e2b5d6"; //"8facece69f694f1597ac5242d3e2b5d6";
+const clientSecret = "545bfedbc7644e328eb2d14f005931c5"; //"eb80ba97247e4935837444127db78e3a";
+// const redirectUri = "http://127.0.0.1:5500/index.html";
 
 const getAccessToken = async(clientId, clientSecret) => {
     const authString = `${clientId}:${clientSecret}`;
@@ -43,13 +21,14 @@ const getAccessToken = async(clientId, clientSecret) => {
             data,
             config
         );
-        console.log(response); //logs the full return from the api call
+        // console.log(response); //logs the full return from the api call
         return response.data.access_token;
     } catch (error) {
         console.error(error);
         throw new Error("Failed to get access token");
     }
 };
+
 getAccessToken(clientId, clientSecret);
 const search = async(selectedOption, query) => {
     const accessToken = await getAccessToken(clientId, clientSecret);
@@ -153,30 +132,6 @@ function millisToMinutesAndSeconds(millis) {
     var seconds = ((millis % 60000) / 1000).toFixed(0);
     return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 }
-//unauthorized to get the email and user detail
-
-// const checkPremium = async() => {
-//     const accessToken = await getAccessToken(clientId, clientSecret);
-
-//     const config = {
-//         headers: {
-//             Authorization: `Bearer ${accessToken}`,
-//         },
-//     };
-
-//     try {
-//         const response = await axios.get("https://api.spotify.com/v1/me", config);
-
-//         if (response.data.product === "premium") {
-//             console.log("User has a premium subscription!");
-//         } else {
-//             console.log("User does not have a premium subscription.");
-//         }
-//     } catch (error) {
-//         console.error(error);
-//     }
-// };
-
 const searchBarFa = document.querySelector(".search-bar-fa");
 let crossButton, headings;
 
@@ -291,3 +246,33 @@ searchLink.addEventListener("click", (e) => {
 searchBar.addEventListener("blur", () => {
     searchBarFa.classList.remove("active"); // Remove active class from the search link
 });
+
+//get accesstoken with scopes
+
+const getAccessTokenScopes = async(clientId, clientSecret, scope) => {
+    const authString = `${clientId}:${clientSecret}`;
+    const base64AuthString = btoa(authString);
+
+    const config = {
+        headers: {
+            Authorization: `Basic ${base64AuthString}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+    };
+
+    const data = new URLSearchParams();
+    data.append("grant_type", "client_credentials");
+    data.append("scope", scope); // include the requested scope(s)
+
+    try {
+        const response = await axios.post(
+            "https://accounts.spotify.com/api/token",
+            data,
+            config
+        );
+        return response.data.access_token;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Failed to get access token");
+    }
+};
