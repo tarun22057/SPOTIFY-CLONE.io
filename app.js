@@ -246,33 +246,3 @@ searchLink.addEventListener("click", (e) => {
 searchBar.addEventListener("blur", () => {
     searchBarFa.classList.remove("active"); // Remove active class from the search link
 });
-
-//get accesstoken with scopes
-
-const getAccessTokenScopes = async(clientId, clientSecret, scope) => {
-    const authString = `${clientId}:${clientSecret}`;
-    const base64AuthString = btoa(authString);
-
-    const config = {
-        headers: {
-            Authorization: `Basic ${base64AuthString}`,
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-    };
-
-    const data = new URLSearchParams();
-    data.append("grant_type", "client_credentials");
-    data.append("scope", scope); // include the requested scope(s)
-
-    try {
-        const response = await axios.post(
-            "https://accounts.spotify.com/api/token",
-            data,
-            config
-        );
-        return response.data.access_token;
-    } catch (error) {
-        console.error(error);
-        throw new Error("Failed to get access token");
-    }
-};
