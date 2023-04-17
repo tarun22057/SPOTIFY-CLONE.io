@@ -1,6 +1,32 @@
-const clientId = "8facece69f694f1597ac5242d3e2b5d6"; //"8facece69f694f1597ac5242d3e2b5d6";
-// const redirectUri = "http://127.0.0.1:5500/index.html";
+// GET THE ACCESS TOKEN: The access token is a string which contains the credentials and permissions that can be used to access a given resource(e.g artists, albums or tracks) or user 's data (e.g your profile or your playlists).
 
+// const getAllScopes = () => {
+//     const scopes = [
+//         "user-read-private",
+//         "user-read-email",
+//         "user-read-playback-state",
+//         "user-read-currently-playing",
+//         "user-read-recently-played",
+//         "user-modify-playback-state",
+//         "user-library-read",
+//         "user-library-modify",
+//         "playlist-read-private",
+//         "playlist-read-collaborative",
+//         "playlist-modify-public",
+//         "playlist-modify-private",
+//         "user-read-playback-position",
+//         "user-read-voice-state",
+//         "user-read-private",
+//     ];
+//     return scopes.join(" ");
+// };
+
+const clientId = "8facece69f694f1597ac5242d3e2b5d6"; //"8facece69f694f1597ac5242d3e2b5d6";
+const clientSecret = "545bfedbc7644e328eb2d14f005931c5"; //"eb80ba97247e4935837444127db78e3a";
+const redirectUri = "http://127.0.0.1:5500/index.html";
+
+const getAccessToken = async(clientId, clientSecret) => {
+    const authString = `${clientId}:${clientSecret}`;
     const base64AuthString = btoa(authString); // we need a base64 string btoa() turns it into base64
 
     const config = {
@@ -26,7 +52,9 @@ const clientId = "8facece69f694f1597ac5242d3e2b5d6"; //"8facece69f694f1597ac5242
     }
 };
 
+getAccessToken(clientId, clientSecret);
 const search = async(selectedOption, query) => {
+    const accessToken = await getAccessToken(clientId, clientSecret);
     const configSearches = {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -127,6 +155,30 @@ function millisToMinutesAndSeconds(millis) {
     var seconds = ((millis % 60000) / 1000).toFixed(0);
     return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 }
+//unauthorized to get the email and user detail
+
+// const checkPremium = async() => {
+//     const accessToken = await getAccessToken(clientId, clientSecret);
+
+//     const config = {
+//         headers: {
+//             Authorization: `Bearer ${accessToken}`,
+//         },
+//     };
+
+//     try {
+//         const response = await axios.get("https://api.spotify.com/v1/me", config);
+
+//         if (response.data.product === "premium") {
+//             console.log("User has a premium subscription!");
+//         } else {
+//             console.log("User does not have a premium subscription.");
+//         }
+//     } catch (error) {
+//         console.error(error);
+//     }
+// };
+
 const searchBarFa = document.querySelector(".search-bar-fa");
 let crossButton, headings;
 
@@ -244,6 +296,8 @@ searchBar.addEventListener("blur", () => {
 
 //get accesstoken with scopes
 
+const getAccessTokenScopes = async(clientId, clientSecret, scope) => {
+    const authString = `${clientId}:${clientSecret}`;
     const base64AuthString = btoa(authString);
 
     const config = {
@@ -269,3 +323,47 @@ searchBar.addEventListener("blur", () => {
         throw new Error("Failed to get access token");
     }
 };
+
+//get user id
+//const userId = async() => {
+//     const accessToken = await getAccessToken(clientId, clientSecret);
+//     const config = {
+//         headers: {
+//             Authorization: `Bearer ${accessToken}`,
+//         },
+//     };
+//     try {
+//         const response = await axios.get("https://api.spotify.com/v1/me", config);
+//         console.log(response);
+//         return response;
+//     } catch (err) {
+//         console.log("CANT GET USER ID : " + err);
+//     }
+// };
+// userId();
+
+const getPlaylists = async() => {
+    const accessToken = await getAccessTokenScopes(clientId, clientSecret, [
+        "user-read-private",
+        "playlist-read-private",
+    ]);
+    const config = {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    };
+    const data = {
+        limit: 50,
+    };
+    try {
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/playlists", { params: data, ...config }
+        );
+        console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Failed to get playlists");
+    }
+};
+getPlaylists();
