@@ -1,5 +1,12 @@
-const clientId = "8facece69f694f1597ac5242d3e2b5d6"; //"8facece69f694f1597ac5242d3e2b5d6";
-// const redirectUri = "http://127.0.0.1:5500/index.html";
+const clientId = "8facece69f694f1597ac5242d3e2b5d6";
+const redirectUri = "http://127.0.0.1:5500/index.html";
+// 8facece69f694f1597ac5242d3e2b5d6:36b49b5ce75642e2ba8901454852a3cf
+// did a ghetto style oauth for now will implement proper authentication later
+//https://accounts.spotify.com/authorize?client_id=8facece69f694f1597ac5242d3e2b5d6&response_type=code&redirect_uri=http://127.0.0.1:5500/index.html&scope=user-read-private%20user-read-email%20user-library-read%20user-library-modify%20playlist-read-private%20playlist-modify-public%20playlist-modify-private%20user-top-read%20user-read-recently-played%20user-follow-read%20user-follow-modify%20user-read-playback-state%20user-read-currently-playing%20user-modify-playback-state%20user-read-playback-position%20user-read-private%20user-read-email
+
+// Store the access token in a variable
+let accessToken = "";
+let refreshToken = "";
 
     const base64AuthString = btoa(authString); // we need a base64 string btoa() turns it into base64
 
@@ -9,24 +16,37 @@ const clientId = "8facece69f694f1597ac5242d3e2b5d6"; //"8facece69f694f1597ac5242
             "Content-Type": "application/x-www-form-urlencoded",
         },
     };
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get("code");
 
     const data = new URLSearchParams();
-    data.append("grant_type", "client_credentials");
+    data.append("grant_type", "authorization_code");
+    data.append("code", code);
+    data.append("redirect_uri", redirectUri);
+    data.append("scope", scope);
+
     try {
         const response = await axios.post(
             "https://accounts.spotify.com/api/token",
             data,
             config
         );
-        // console.log(response); //logs the full return from the api call
-        return response.data.access_token;
+        console.log(response); //logs the full return from the api call
+        accessToken = response.data.access_token; // Store the access token in the variable
+        refreshToken = response.data.refresh_token; //store the response token in the variable
     } catch (error) {
-        console.error(error);
-        throw new Error("Failed to get access token");
+        console.log(error.message + " ---THE MAIN ACCESS TOKEN CALL");
     }
 };
 
-const search = async(selectedOption, query) => {
+// Call the getAccessToken method once
+getAccessToken(
+    clientId,
+    redirectUri,
+    "user-read-private user-read-email"
+);
+
+const search = async(selectedOption, query, accessToken, refreshToken) => {
     const configSearches = {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -45,7 +65,7 @@ const search = async(selectedOption, query) => {
             "https://api.spotify.com/v1/search",
             configSearches
         );
-        // console.log(response);
+        console.log(response);
         // return response.data[selectedOption + "s"].items; // this "s" appended because the api returns json obejct as tracks : .... and we are passing selectedOption = track,album etc so we need to append s
         return response.data.tracks.items;
     } catch (err) {
@@ -53,7 +73,7 @@ const search = async(selectedOption, query) => {
     }
 };
 
-// const select = document.querySelector("#select-options");
+const select = document.querySelector("#select-options");
 const searchBar = document.querySelector(".search-bar");
 
 searchBar.addEventListener("input", async function() {
@@ -63,7 +83,7 @@ searchBar.addEventListener("input", async function() {
     // console.log(query);
     // console.log(selectedOption);
     try {
-        const searchResults = await search(selectedOption, query);
+        const searchResults = await search(selectedOption, query, accessToken);
         console.log(searchResults);
 
         const resultsContainer = document.querySelector(".results-container");
@@ -241,3 +261,5 @@ searchLink.addEventListener("click", (e) => {
 searchBar.addEventListener("blur", () => {
     searchBarFa.classList.remove("active"); // Remove active class from the search link
 });
+
+// get the
