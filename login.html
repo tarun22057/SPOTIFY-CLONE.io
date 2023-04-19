@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+</head>
+
+<body>
+    <h1>Login to my app</h1>
+    <button class="login-button">Login with Spotify</button>
+
+    <script>
+        const clientId = "8facece69f694f1597ac5242d3e2b5d6";
+        const clientSecret = "89851d686eff40b6a9a6ba407033c1ad";
+        const redirectUri = "http://127.0.0.1:5500/index.html";
+        const getAuthCode = async(clientId, redirectUri, scope) => {
+            const url = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(
+          redirectUri
+        )}&scope=${encodeURIComponent(scope)}`;
+
+            // Create an anchor element
+            const anchor = document.createElement("a");
+            anchor.setAttribute("href", url);
+            anchor.setAttribute("target", "_blank");
+            document.body.appendChild(anchor);
+
+            // Programmatically click the anchor element to open the authorization page in a new tab
+            anchor.click();
+
+            // Wait for the user to be redirected back to the redirect URI
+            return new Promise((resolve, reject) => {
+                const onRedirect = (event) => {
+                    if (event.origin !== window.location.origin) {
+                        return;
+                    }
+
+                    const params = new URLSearchParams(event.data);
+                    const code = params.get("code");
+
+                    if (code) {
+                        window.removeEventListener("message", onRedirect);
+                        resolve(code);
+                    }
+                };
+
+                window.addEventListener("message", onRedirect);
+            });
+        };
+
+        const loginButton = document.querySelector(".login-button");
+
+        loginButton.addEventListener("click", () => {
+            getAuthCode(clientId, redirectUri, "user-read-private user-read-email");
+        });
+    </script>
+</body>
+
+</html>
