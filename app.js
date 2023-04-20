@@ -145,17 +145,20 @@ searchBar.addEventListener("input", async function() {
             result.appendChild(resultName);
 
             //create a div element for the search result artist
-            const resultArtist = document.createElement("div");
+            const resultArtist = document.createElement("a");
             resultArtist.textContent = searchResults[i].artists[0].name;
             resultName.appendChild(resultArtist);
+            resultArtist.classList.add("searched-song-artist");
+            resultArtist.href = searchResults[i].artists[0].external_urls.spotify;
+
             resultName.classList.add("searched-song-name"); //  dynamically adding class names to p tags
 
             //get the album to which this song belongs
-            const resultAlbum = document.createElement("div");
+            const resultAlbum = document.createElement("a");
             resultAlbum.textContent = searchResults[i].album.name;
             result.appendChild(resultAlbum);
             resultAlbum.classList.add("searched-song-album"); //  dynamically adding class names to p tags
-
+            resultAlbum.href = searchResults[i].album.external_urls.spotify;
             //create a div tag for song timing
             const songTime = document.createElement("div");
 
