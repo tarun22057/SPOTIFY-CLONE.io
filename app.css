@@ -212,6 +212,12 @@ svg {
     padding: 0.5em 0.75em;
 }
 
+.result-div:hover {
+    background-color: rgb(24, 24, 24);
+    border-radius: 12px;
+    cursor: pointer;
+}
+
 .headings {
     display: grid;
     align-items: center;
@@ -238,6 +244,24 @@ svg {
     display: flex;
     flex-direction: column;
     gap: 0.65em;
+}
+
+.searched-song-artist {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.searched-song-album {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.searched-song-artist:hover {
+    text-decoration: underline;
+}
+
+.searched-song-album:hover {
+    text-decoration: underline;
 }
 
 
