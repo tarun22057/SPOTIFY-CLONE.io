@@ -2,11 +2,11 @@ const clientId = "8facece69f694f1597ac5242d3e2b5d6";
 const redirectUri = "http://127.0.0.1:5500/index.html";
 // 8facece69f694f1597ac5242d3e2b5d6:36b49b5ce75642e2ba8901454852a3cf
 // did a ghetto style oauth for now will implement proper authentication later
-//https://accounts.spotify.com/authorize?client_id=8facece69f694f1597ac5242d3e2b5d6&response_type=code&redirect_uri=http://127.0.0.1:5500/index.html&scope=user-read-private%20user-read-email%20user-library-read%20user-library-modify%20playlist-read-private%20playlist-modify-public%20playlist-modify-private%20user-top-read%20user-read-recently-played%20user-follow-read%20user-follow-modify%20user-read-playback-state%20user-read-currently-playing%20user-modify-playback-state%20user-read-playback-position%20user-read-private%20user-read-email
+//https://accounts.spotify.com/authorize?client_id=8facece69f694f1597ac5242d3e2b5d6&response_type=code&redirect_uri=http://127.0.0.1:5500/index.html&scope=user-read-private%20user-read-email%20user-library-read%20user-library-modify%20playlist-read-private%20playlist-modify-public%20playlist-modify-private%20user-top-read%20user-read-recently-played%20user-follow-read%20user-follow-modify%20user-read-playback-state%20user-read-currently-playing%20user-modify-playback-state%20user-read-playback-position%20user-read-private%20user-read-email%20playlist-read-private
 
 // Store the access token in a variable
 let accessToken = "";
-let refreshToken = "";
+// let refreshToken = "";
 
     const base64AuthString = btoa(authString); // we need a base64 string btoa() turns it into base64
 
@@ -33,7 +33,9 @@ let refreshToken = "";
         );
         console.log(response); //logs the full return from the api call
         accessToken = response.data.access_token; // Store the access token in the variable
-        refreshToken = response.data.refresh_token; //store the response token in the variable
+        //refreshToken = response.data.refresh_token; //store the response token in the variable
+        getPlaylists(accessToken);
+        displayPlaylistNames(accessToken);
     } catch (error) {
         console.log(error.message + " ---THE MAIN ACCESS TOKEN CALL");
     }
@@ -43,10 +45,36 @@ let refreshToken = "";
 getAccessToken(
     clientId,
     redirectUri,
-    "user-read-private user-read-email"
+    "user-read-private user-read-email playlist-read-private playlist-read-collaborative"
 );
 
-const search = async(selectedOption, query, accessToken, refreshToken) => {
+const getPlaylists = async(accessToken) => {
+    console.log(accessToken);
+    try {
+        const configSearches = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                limit: 20,
+                offset: 0,
+            },
+        };
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/playlists",
+            configSearches
+        );
+        console.log(response.data);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+const search = async(selectedOption, query, accessToken) => {
+    // const playlists = await getPlaylists(accessToken);
+    // console.log("PLAYLIST : " + playlists);
+
     const configSearches = {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -56,7 +84,7 @@ const search = async(selectedOption, query, accessToken, refreshToken) => {
             type: `${selectedOption}`,
             market: "US",
             limit: 20,
-            offseet: 0,
+            offset: 0,
         },
     };
 
@@ -65,7 +93,7 @@ const search = async(selectedOption, query, accessToken, refreshToken) => {
             "https://api.spotify.com/v1/search",
             configSearches
         );
-        console.log(response);
+        // console.log(response);
         // return response.data[selectedOption + "s"].items; // this "s" appended because the api returns json obejct as tracks : .... and we are passing selectedOption = track,album etc so we need to append s
         return response.data.tracks.items;
     } catch (err) {
@@ -262,4 +290,20 @@ searchBar.addEventListener("blur", () => {
     searchBarFa.classList.remove("active"); // Remove active class from the search link
 });
 
-// get the
+// get the playlists
+//what you need to do is as soon as the window opens you have to display the name of the playlist which is basically an anchor tag
+//then if you click that anchor tag you get the tracks of that playlist
+
+const playList = document.querySelector(".playlist");
+
+const displayPlaylistNames = async(accessToken) => {
+    const playListNames = await getPlaylists(accessToken);
+    // console.log(playlists);
+    for (let i = 0; i < playListNames.items.length; i++) {
+        const playlistLink = document.createElement("a");
+        playlistLink.href = playListNames.items[i].external_urls.spotify;
+        playlistLink.textContent = playListNames.items[i].name;
+        playlistLink.classList.add("left-side-playlist");
+        playList.appendChild(playlistLink);
+    }
+};

@@ -313,3 +313,10 @@ svg {
     align-items: center;
     gap: 1em;
 }
+
+.left-side-playlist {
+    display: flex;
+    gap: 1em;
+    font-size: 0.75rem;
+    padding-top: 1.5em;
+}
