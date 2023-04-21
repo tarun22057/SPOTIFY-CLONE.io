@@ -34,8 +34,14 @@ let accessToken = "";
         console.log(response); //logs the full return from the api call
         accessToken = response.data.access_token; // Store the access token in the variable
         //refreshToken = response.data.refresh_token; //store the response token in the variable
+
         getPlaylists(accessToken);
         displayPlaylistNames(accessToken);
+
+        topArtists(accessToken);
+        displayTopArtists(accessToken);
+
+        recentlyPlayedTracks(accessToken);
     } catch (error) {
         console.log(error.message + " ---THE MAIN ACCESS TOKEN CALL");
     }
@@ -45,31 +51,8 @@ let accessToken = "";
 getAccessToken(
     clientId,
     redirectUri,
-    "user-read-private user-read-email playlist-read-private playlist-read-collaborative"
+    "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played"
 );
-
-const getPlaylists = async(accessToken) => {
-    console.log(accessToken);
-    try {
-        const configSearches = {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-            params: {
-                limit: 20,
-                offset: 0,
-            },
-        };
-        const response = await axios.get(
-            "https://api.spotify.com/v1/me/playlists",
-            configSearches
-        );
-        console.log(response.data);
-        return response.data;
-    } catch (err) {
-        console.log(err);
-    }
-};
 
 const search = async(selectedOption, query, accessToken) => {
     // const playlists = await getPlaylists(accessToken);
@@ -297,6 +280,28 @@ searchBar.addEventListener("blur", () => {
 // get the playlists
 //what you need to do is as soon as the window opens you have to display the name of the playlist which is basically an anchor tag
 //then if you click that anchor tag you get the tracks of that playlist
+const getPlaylists = async(accessToken) => {
+    console.log(accessToken);
+    try {
+        const configSearches = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                limit: 20,
+                offset: 0,
+            },
+        };
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/playlists",
+            configSearches
+        );
+        // console.log(response.data);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+    }
+};
 
 const playList = document.querySelector(".playlist");
 const rightSideHomeStuff = document.querySelector(".right-side-home-stuff");
@@ -340,3 +345,80 @@ searchBar.addEventListener("input", () => {
         rightSideMain.appendChild(rightSideHomeStuff);
     }
 });
+
+const topArtists = async(accessToken) => {
+    try {
+        const configSearches = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                ids: "5cj0lLjcoR7YOSnhnX0Po5,1Xyo4u8uXC1ZmMpatF05PJ,66CXWjxzNUsdJxJ2JdwvnR,3TVXtAsR1Inumwj472S9r4,2YZyLoL8N0Wb9xBt1NhZWg,1RyvyyTE3xzB2ZywiAwp0i,2jku7tDXc6XoB6MO2hFuqg,7qG3b048QCHVRO5Pv1T5lw,3MZsBdqDrRTJihTHQrO6Dq,7bXgB6jMjp9ATFy66eO08Z",
+            },
+        };
+        const response = await axios.get(
+            "https://api.spotify.com/v1/artists",
+            configSearches
+        );
+        // console.log(response.data.artists);
+        return response.data.artists;
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+const topArtistsDiv = document.querySelector(".top-artists");
+const displayTopArtists = async(accessToken) => {
+    const response = await topArtists(accessToken);
+    // console.log(response);
+
+    for (let i = 0; i < 10; i++) {
+        const topArtistDisplay = document.createElement("div");
+        topArtistDisplay.classList.add("top-artist-container");
+
+        const topArtistImg = document.createElement("img");
+        topArtistImg.src = response[i].images[0].url;
+        topArtistImg.classList.add("top-artist-img");
+        topArtistDisplay.appendChild(topArtistImg);
+
+        const topArtistLink = document.createElement("a");
+        topArtistLink.href = response[i].external_urls.spotify;
+        topArtistLink.textContent = response[i].name;
+        topArtistLink.classList.add("top-artist-link");
+        topArtistDisplay.appendChild(topArtistLink);
+
+        // const topArtistFolllowers = document.createElement("p");
+        // topArtistFolllowers.textContent =
+        //     "FOLLOWERS : " + response[i].followers.total;
+        // topArtistFolllowers.classList.add("top-artist-followers");
+        // topArtistDisplay.appendChild(topArtistFolllowers);
+
+        //when you click you should go to artits profile
+
+        topArtistsDiv.appendChild(topArtistDisplay);
+    }
+};
+
+//write a function recently played tracks
+const recentlyPlayedTracks = async(accessToken) => {
+    try {
+        const configSearches = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                limit: 10,
+                after: 1484811043508,
+                offset: 0,
+            },
+        };
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/player/recently-played",
+            configSearches
+        );
+        console.log(response);
+        return response.data;
+    } catch (err) {
+        console.log(err);
+    }
+};
