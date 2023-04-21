@@ -114,6 +114,7 @@ searchBar.addEventListener("input", async function() {
     const query = this.value; //gets the value from the serach bar
     // console.log(query);
     // console.log(selectedOption);
+
     try {
         const searchResults = await search(selectedOption, query, accessToken);
         console.log(searchResults);
@@ -302,15 +303,44 @@ searchBar.addEventListener("blur", () => {
 //then if you click that anchor tag you get the tracks of that playlist
 
 const playList = document.querySelector(".playlist");
+const rightSideHomeStuff = document.querySelector(".right-side-home-stuff");
+const rightSideMain = document.querySelector(".right-side-main");
+const goodEvening = document.querySelector(".good-evening");
 
 const displayPlaylistNames = async(accessToken) => {
     const playListNames = await getPlaylists(accessToken);
     // console.log(playlists);
     for (let i = 0; i < playListNames.items.length; i++) {
+        //for displaying the playlist on the left side
         const playlistLink = document.createElement("a");
         playlistLink.href = playListNames.items[i].external_urls.spotify;
         playlistLink.textContent = playListNames.items[i].name;
         playlistLink.classList.add("left-side-playlist");
         playList.appendChild(playlistLink);
+
+        // for displaying the playlist on the right side homepage
+
+        const playListDiv = document.createElement("div");
+        playListDiv.classList.add("right-playlist-container");
+
+        const playListAnchor = document.createElement("a");
+        const playListImg = document.createElement("img");
+        playListImg.src = playListNames.items[i].images[0].url;
+        playListImg.classList.add("right-side-playlist-img");
+        playListDiv.appendChild(playListImg);
+
+        playListAnchor.href = playListNames.items[i].external_urls.spotify;
+        playListAnchor.textContent = playListNames.items[i].name;
+        playListAnchor.classList.add("play-List-Anchor");
+        goodEvening.appendChild(playListDiv);
+        playListDiv.appendChild(playListAnchor);
     }
 };
+
+searchBar.addEventListener("input", () => {
+    if (searchBar.value !== "") {
+        rightSideMain.removeChild(rightSideHomeStuff);
+    } else {
+        rightSideMain.appendChild(rightSideHomeStuff);
+    }
+});
