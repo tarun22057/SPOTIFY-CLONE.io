@@ -136,6 +136,10 @@ input:focus {
     outline: none;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 a {
     color: rgb(159, 159, 159);
     text-decoration: none;
@@ -150,15 +154,16 @@ a:hover {
 
 body {
     color: white;
-    border: 1px solid red;
+    /* border: 1px solid red; */
     display: flex;
     flex-direction: row;
     font-family: "Montserrat", sans-serif;
     font-size: 0.8rem;
     font-weight: 600;
     height: 100%;
-    background: rgb(238, 145, 83);
-    background: linear-gradient( 360deg, rgba(18, 18, 18, 1) 0%, rgba(21, 16, 33, 1) 25%, rgba(31, 15, 69, 1) 90%);
+    background-color: #222222;
+    /* background: rgb(238, 145, 83); */
+    /* background: linear-gradient( 360deg, rgba(223, 74, 74, 1) 65%, #077b18 20%, rgba(207, 211, 232, 1) 15%); */
 }
 
 .right-side-main {
@@ -168,7 +173,7 @@ body {
     width: 85%;
     /* border: 10px solid green; */
     height: 100%;
-    padding: 1.3em 0em 0em 1em;
+    padding: 1.3em 0em 0em 2em;
 }
 
 .search-bar {
@@ -291,7 +296,7 @@ svg {
 .left-side {
     /* border: 1px solid blue; */
     background-color: #121212;
-    width: 15%;
+    min-width: 15%;
     position: fixed;
     top: 0;
     left: 0;
@@ -348,14 +353,19 @@ svg {
     padding-top: 1.5em;
 }
 
+.right-side-home-stuff {
+    /* border: 1px solid red; */
+    padding: 1em;
+}
+
 .good-eve-h1 {
     margin-top: 2em;
-    margin-left: 1.5em;
+    /* margin-left: 1.5em; */
     font-size: 1.2rem;
 }
 
 .good-evening {
-    padding: 2em 2em 2em 1.5em;
+    padding: 2em 2em 2em 0em;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 1.3em;
@@ -370,7 +380,8 @@ svg {
     align-items: center;
     gap: 0.5em;
     border-radius: 5px;
-    background: rgb(46, 41, 57);
+    background: #181818;
+    transition: transform 0.3s ease, background-color 0.5s ease;
 }
 
 .right-side-playlist-img {
@@ -381,19 +392,61 @@ svg {
 }
 
 .right-playlist-container:hover {
-    transform: scale(1.05);
-    transition: transform 0.5s ease;
-    /* background: rgb(64, 40, 24);
-    background: linear-gradient( 90deg, rgba(64, 40, 24, 1) 0%, rgba(75, 83, 161, 1) 47%, rgba(34, 140, 140, 1) 100%); */
+    transform: scale(1.02);
+    background-color: rgb(59, 57, 57);
 }
-
-
-/* .hover-body {
-    background-color: rgb(64, 40, 24);
-    background-color: linear-gradient( 90deg, rgba(64, 40, 24, 1) 0%, rgba(75, 83, 161, 1) 47%, rgba(34, 140, 140, 1) 100%);
-} */
 
 .play-List-Anchor {
     font-size: 0.9rem;
     color: white;
+}
+
+.play-List-Anchor:hover {
+    text-decoration: underline;
+}
+
+.play-list-conatiner h1 {
+    font-size: 1.2rem;
+    margin-top: 0.8em;
+    margin-bottom: 1em;
+}
+
+.top-artists {
+    display: flex;
+    flex-direction: row;
+    /* border: 1px solid red; */
+    overflow-y: scroll;
+    gap: 2em;
+}
+
+.top-artist-img {
+    height: 150px;
+    width: 150px;
+    border-radius: 7px;
+}
+
+.top-artist-container {
+    /* border: 1px solid red; */
+    width: 170px;
+    height: 210px;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    border-radius: 7px;
+    background-color: #181818;
+    padding: 1.5em;
+    transition: transform 0.3s ease, background-color 0.5s ease;
+}
+
+.top-artist-container:hover {
+    background-color: rgb(59, 57, 57);
+    transform: scale(1.01);
+}
+
+.top-artist-link {
+    font-size: 0.9rem;
+}
+
+.top-artist-link:hover {
+    text-decoration: underline;
 }
