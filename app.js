@@ -1,5 +1,5 @@
-const clientId = "8facece69f694f1597ac5242d3e2b5d6";
-const clientSecret = "89851d686eff40b6a9a6ba407033c1ad";
+const clientId = "94593996f06140038693984df35d34a6"; // "8facece69f694f1597ac5242d3e2b5d6";
+const clientSecret = "97e64b3063884f98b128659c632c5df9"; // "89851d686eff40b6a9a6ba407033c1ad";
 const redirectUri = "http://127.0.0.1:5500/index.html";
 // 8facece69f694f1597ac5242d3e2b5d6:36b49b5ce75642e2ba8901454852a3cf
 // did a ghetto style oauth for now will implement proper authentication later
@@ -51,6 +51,10 @@ const getAccessToken = async (clientId, clientSecret, redirectUri, scope) => {
     displayRecommendedTracks(accessToken);
 
     displaySavedEpisodes(accessToken);
+
+    getDeviceId(accessToken);
+
+    playTrack(accessToken);
   } catch (error) {
     console.log(error.message + " ---THE MAIN ACCESS TOKEN CALL");
 
@@ -63,7 +67,7 @@ getAccessToken(
   clientId,
   clientSecret,
   redirectUri,
-  "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played"
+  "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played user-read-playback-state user-modify-playback-state streaming"
 );
 
 const search = async (selectedOption, query, accessToken) => {
@@ -88,7 +92,7 @@ const search = async (selectedOption, query, accessToken) => {
       "https://api.spotify.com/v1/search",
       configSearches
     );
-    // console.log(response);
+    console.log(response);
     // return response.data[selectedOption + "s"].items; // this "s" appended because the api returns json obejct as tracks : .... and we are passing selectedOption = track,album etc so we need to append s
     return response.data.tracks.items;
   } catch (err) {
@@ -293,14 +297,13 @@ searchBar.addEventListener("blur", () => {
 //what you need to do is as soon as the window opens you have to display the name of the playlist which is basically an anchor tag
 //then if you click that anchor tag you get the tracks of that playlist
 const getPlaylists = async (accessToken) => {
-  //   console.log(accessToken);
   try {
     const configSearches = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
       params: {
-        limit: 20,
+        limit: 6,
         offset: 0,
       },
     };
@@ -308,7 +311,6 @@ const getPlaylists = async (accessToken) => {
       "https://api.spotify.com/v1/me/playlists",
       configSearches
     );
-    // console.log(response.data);
     return response.data;
   } catch (err) {
     console.log(err);
@@ -322,7 +324,6 @@ const goodEvening = document.querySelector(".good-evening");
 
 const displayPlaylistNames = async (accessToken) => {
   const playListNames = await getPlaylists(accessToken);
-  // console.log(playlists);
   for (let i = 0; i < playListNames.items.length; i++) {
     //for displaying the playlist on the left side
     const playlistLink = document.createElement("a");
@@ -372,7 +373,6 @@ const topArtists = async (accessToken) => {
       "https://api.spotify.com/v1/artists",
       configSearches
     );
-    // console.log(response.data.artists);
     return response.data.artists;
   } catch (err) {
     console.log(err);
@@ -382,7 +382,6 @@ const topArtists = async (accessToken) => {
 const topArtistsDiv = document.querySelector(".top-artists");
 const displayTopArtists = async (accessToken) => {
   const response = await topArtists(accessToken);
-  // console.log(response);
 
   for (let i = 0; i < 10; i++) {
     const topArtistDisplay = document.createElement("div");
@@ -428,7 +427,6 @@ const recentlyPlayedTracks = async (accessToken) => {
       "https://api.spotify.com/v1/me/player/recently-played",
       configSearches
     );
-    // console.log(response);
     return response.data;
   } catch (err) {
     console.log(err);
@@ -438,7 +436,6 @@ const recentlyPlayedTracks = async (accessToken) => {
 const recentlyPlayedDiv = document.querySelector(".recently-played");
 const displayRecentlyPlayedTracks = async (accessToken) => {
   const response = await recentlyPlayedTracks(accessToken);
-  //   console.log(response);
   for (let i = 0; i < 10; i++) {
     const recentlyPlayedTrackDisplay = document.createElement("div");
     recentlyPlayedTrackDisplay.classList.add("recently-played-track-container");
@@ -460,7 +457,6 @@ const displayRecentlyPlayedTracks = async (accessToken) => {
 };
 
 const topTracks = async (accessToken) => {
-  console.log(accessToken);
   try {
     const configSearches = {
       headers: {
@@ -484,7 +480,6 @@ const topTracks = async (accessToken) => {
 const yourTopTracks = document.querySelector(".top-tracks");
 const displayTopTracks = async (accessToken) => {
   const response = await topTracks(accessToken);
-  //   console.log(response);
   for (let i = 0; i < 10; i++) {
     const topTracksDisplay = document.createElement("div");
     topTracksDisplay.classList.add("top-tracks-container");
@@ -529,7 +524,6 @@ const mySavedAlbums = async (accessToken) => {
 const savedAlbums = document.querySelector(".saved-albums");
 const displaySavedAlbums = async (accessToken) => {
   const response = await mySavedAlbums(accessToken);
-  //   console.log(response);
   for (let i = 0; i < 10; i++) {
     const savedAlbumsDiv = document.createElement("div");
     savedAlbumsDiv.classList.add("saved-albums-container");
@@ -582,7 +576,6 @@ const displayRecommendedTracks = async (accessToken) => {
   ];
 
   const tracks = await getRecommendations(accessToken, artistIds);
-  //   console.log(tracks);
 
   for (let i = 0; i < tracks.length; i++) {
     const track = tracks[i];
@@ -628,7 +621,6 @@ const mySavedEpisodes = async (accessToken) => {
 const savedEpisodes = document.querySelector(".saved-episodes");
 const displaySavedEpisodes = async (accessToken) => {
   const response = await mySavedEpisodes(accessToken);
-  console.log(response);
   for (let i = 0; i < 10; i++) {
     const savedEpisodesDiv = document.createElement("div");
     savedEpisodesDiv.classList.add("saved-episodes-container");
@@ -665,3 +657,73 @@ savedEp.addEventListener("click", (event) => {
     savedEpisodes.classList.remove("highlight");
   }, 10000);
 });
+
+const getDeviceId = async (accessToken) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  };
+
+  try {
+    const response = await axios.get(
+      "https://api.spotify.com/v1/me/player/devices",
+      config
+    );
+    // console.log(response);
+    const devices = response.data.devices;
+    if (devices.length > 0) {
+      return devices[0].id;
+    } else {
+      console.log("No devices found");
+    }
+  } catch (err) {
+    console.log("Error retrieving devices");
+  }
+};
+// window.onSpotifyWebPlaybackSDKReady = (accessToken) => {
+//   // Initialize the Spotify Web Playback SDK
+//   const player = new Spotify.Player({
+//     name: "My Web Playback SDK Player",
+//     getOAuthToken: (callback) => {
+//       // Call the callback function with your access token
+//       callback(accessToken);
+//     },
+//     volume: 0.5,
+//   });
+
+//   // Add event listeners to the player
+//   player.addListener("ready", ({ device_id }) => {
+//     console.log("Device ID:", device_id);
+//   });
+
+//   // Connect to the player
+//   player.connect();
+// };
+
+const playTrack = async (accessToken) => {
+  const deviceId = await getDeviceId(accessToken);
+  const trackUri = "spotify:track:7qiZfU4dY1lWllzX7mPBI3";
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  const data = {
+    uris: [trackUri],
+  };
+
+  try {
+    await axios.put(
+      `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+      data,
+      config
+    );
+    console.log("Track played successfully");
+  } catch (err) {
+    console.log("Error playing track: ", err.message);
+  }
+};

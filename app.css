@@ -153,20 +153,17 @@ a:hover {
 
 body {
   color: white;
-  /* border: 1px solid red; */
+  background-color: #121212;
   display: flex;
   flex-direction: row;
   font-family: "Montserrat", sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   height: 100%;
-  background-color: #222222;
-  /* background: rgb(238, 145, 83); */
-  /* background: linear-gradient( 360deg, rgba(223, 74, 74, 1) 65%, #077b18 20%, rgba(207, 211, 232, 1) 15%); */
 }
 
 .right-side-main {
-  /* background-color: #232323; */
+  background-color: #121212;
   position: relative;
   margin-left: 15%;
   width: 85%;
@@ -218,7 +215,7 @@ svg {
 }
 
 .result-div:hover {
-  background-color: rgb(24, 24, 24);
+  background-color: #181818;
   border-radius: 12px;
   cursor: pointer;
   width: 96%;
@@ -290,7 +287,7 @@ svg {
 
 .left-side {
   /* border: 1px solid blue; */
-  background-color: #121212;
+  background-color: #000000;
   min-width: 15%;
   position: fixed;
   top: 0;
@@ -376,7 +373,7 @@ svg {
   gap: 0.5em;
   border-radius: 5px;
   background: #181818;
-  transition: transform 0.3s ease, background-color 0.5s ease;
+  /* transition: transform 0.3s ease, background-color 0.5s ease; */
 }
 
 .right-side-playlist-img {
@@ -387,8 +384,8 @@ svg {
 }
 
 .right-playlist-container:hover {
-  transform: scale(1.02);
-  background-color: rgb(59, 57, 57);
+  /* transform: scale(1.02); */
+  background-color: #262626;
 }
 
 .play-List-Anchor {
@@ -442,7 +439,7 @@ svg {
   border-radius: 7px;
   background-color: #181818;
   padding: 1.5em;
-  transition: transform 0.3s ease, background-color 0.5s ease;
+  /* transition: transform 0.3s ease, background-color 0.5s ease; */
 }
 
 .top-artist-container:hover,
@@ -451,8 +448,8 @@ svg {
 .saved-albums-container:hover,
 .recommendation-container:hover,
 .saved-episodes-container:hover {
-  background-color: rgb(59, 57, 57);
-  transform: scale(1.01);
+  background-color: #262626;
+  /* transform: scale(1.01); */
 }
 
 .top-artist-link,
@@ -488,7 +485,7 @@ svg {
   width: 350px;
   border-radius: 7px;
   background-color: #181818;
-  transition: transform 0.3s ease, background-color 0.5s ease;
+  /* transition: transform 0.3s ease, background-color 0.5s ease; */
 }
 
 .highlight {
