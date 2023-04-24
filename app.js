@@ -34,7 +34,7 @@ const getAccessToken = async (clientId, clientSecret, redirectUri, scope) => {
       data,
       config
     );
-    console.log(response); //logs the full return from the api call
+
     accessToken = response.data.access_token; // Store the access token in the variable
     //refreshToken = response.data.refresh_token; //store the response token in the variable
 
@@ -524,7 +524,7 @@ const mySavedAlbums = async (accessToken) => {
 const savedAlbums = document.querySelector(".saved-albums");
 const displaySavedAlbums = async (accessToken) => {
   const response = await mySavedAlbums(accessToken);
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < response.items.length; i++) {
     const savedAlbumsDiv = document.createElement("div");
     savedAlbumsDiv.classList.add("saved-albums-container");
 
@@ -612,6 +612,7 @@ const mySavedEpisodes = async (accessToken) => {
       "https://api.spotify.com/v1/me/episodes",
       configSearches
     );
+
     return response.data;
   } catch (err) {
     console.log(err);
@@ -621,7 +622,7 @@ const mySavedEpisodes = async (accessToken) => {
 const savedEpisodes = document.querySelector(".saved-episodes");
 const displaySavedEpisodes = async (accessToken) => {
   const response = await mySavedEpisodes(accessToken);
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < response.items.length; i++) {
     const savedEpisodesDiv = document.createElement("div");
     savedEpisodesDiv.classList.add("saved-episodes-container");
 
@@ -658,6 +659,26 @@ savedEp.addEventListener("click", (event) => {
   }, 10000);
 });
 
+window.onSpotifyWebPlaybackSDKReady = () => {
+  const player = new Spotify.Player({
+    name: "My Web Playback SDK Player",
+    getOAuthToken: (callback) => {
+      // Call the callback function with your access token
+      callback(accessToken);
+    },
+    volume: 0.5,
+  });
+
+  // Add event listeners to the player
+  player.addListener("ready", ({ device_id }) => {
+    console.log("Device ID:", device_id);
+    playTrack(accessToken, device_id); // Start playing the track
+  });
+
+  // Connect to the player
+  player.connect();
+};
+
 const getDeviceId = async (accessToken) => {
   const config = {
     headers: {
@@ -670,7 +691,6 @@ const getDeviceId = async (accessToken) => {
       "https://api.spotify.com/v1/me/player/devices",
       config
     );
-    // console.log(response);
     const devices = response.data.devices;
     if (devices.length > 0) {
       return devices[0].id;
@@ -681,29 +701,9 @@ const getDeviceId = async (accessToken) => {
     console.log("Error retrieving devices");
   }
 };
-// window.onSpotifyWebPlaybackSDKReady = (accessToken) => {
-//   // Initialize the Spotify Web Playback SDK
-//   const player = new Spotify.Player({
-//     name: "My Web Playback SDK Player",
-//     getOAuthToken: (callback) => {
-//       // Call the callback function with your access token
-//       callback(accessToken);
-//     },
-//     volume: 0.5,
-//   });
 
-//   // Add event listeners to the player
-//   player.addListener("ready", ({ device_id }) => {
-//     console.log("Device ID:", device_id);
-//   });
-
-//   // Connect to the player
-//   player.connect();
-// };
-
-const playTrack = async (accessToken) => {
-  const deviceId = await getDeviceId(accessToken);
-  const trackUri = "spotify:track:7qiZfU4dY1lWllzX7mPBI3";
+const playTrack = async (accessToken, deviceId) => {
+  const trackUri = "spotify:track:1AhDOtG9vPSOmsWgNW0BEY";
 
   const config = {
     headers: {
@@ -722,7 +722,8 @@ const playTrack = async (accessToken) => {
       data,
       config
     );
-    console.log("Track played successfully");
+    // console.log("Track played successfully");
+    player.play(); // Start playing the track on the Web Playback SDK player
   } catch (err) {
     console.log("Error playing track: ", err.message);
   }
