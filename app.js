@@ -49,9 +49,9 @@ let accessToken = "";
 
     displaySavedEpisodes(accessToken);
 
-    getDeviceId(accessToken);
+    // getDeviceId(accessToken);
 
-    playTrack(accessToken);
+    // playTrack(accessToken);
   } catch (error) {
     console.log(error.message + " ---THE MAIN ACCESS TOKEN CALL");
 
@@ -67,9 +67,6 @@ getAccessToken(
 );
 
 const search = async (selectedOption, query, accessToken) => {
-  // const playlists = await getPlaylists(accessToken);
-  // console.log("PLAYLIST : " + playlists);
-
   const configSearches = {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -89,7 +86,6 @@ const search = async (selectedOption, query, accessToken) => {
       configSearches
     );
     console.log(response);
-    // return response.data[selectedOption + "s"].items; // this "s" appended because the api returns json obejct as tracks : .... and we are passing selectedOption = track,album etc so we need to append s
     return response.data.tracks.items;
   } catch (err) {
     console.log("couldn't find what you were looking for");
@@ -100,11 +96,8 @@ const select = document.querySelector("#select-options");
 const searchBar = document.querySelector(".search-bar");
 
 searchBar.addEventListener("input", async function () {
-  // const selectedOption = this.value; if you want to search for albums etc use the select option in the html
   const selectedOption = "track";
-  const query = this.value; //gets the value from the serach bar
-  // console.log(query);
-  // console.log(selectedOption);
+  const query = this.value;
 
   try {
     const searchResults = await search(selectedOption, query, accessToken);
@@ -112,58 +105,67 @@ searchBar.addEventListener("input", async function () {
 
     const resultsContainer = document.querySelector(".results-container");
 
-    // Clear the search results container
     resultsContainer.innerHTML = "";
+
+    let selectedTrackUri = "";
 
     for (let i = 0; i < 20; i++) {
       const result = document.createElement("div");
-      result.classList.add("result-div"); //  dynamically adding class names to div
+      result.classList.add("result-div");
 
-      //create a div tag and give numbering
       const resultNumber = document.createElement("div");
       resultNumber.textContent = i + 1;
       result.appendChild(resultNumber);
-      resultNumber.classList.add("result-number"); //  dynamically adding class names to span tags
+      resultNumber.classList.add("result-number");
 
-      // create an image element for the search result
       const resultImg = document.createElement("img");
       resultImg.src = searchResults[i].album.images[0].url;
       result.appendChild(resultImg);
-      resultImg.classList.add("searched-img"); //  dynamically adding class names to img
+      resultImg.classList.add("searched-img");
 
-      // create a div element for the search result name
       const resultName = document.createElement("div");
       resultName.textContent = searchResults[i].name;
       result.appendChild(resultName);
 
-      //create a div element for the search result artist
       const resultArtist = document.createElement("a");
       resultArtist.textContent = searchResults[i].artists[0].name;
       resultName.appendChild(resultArtist);
       resultArtist.classList.add("searched-song-artist");
       resultArtist.href = searchResults[i].artists[0].external_urls.spotify;
 
-      resultName.classList.add("searched-song-name"); //  dynamically adding class names to p tags
+      resultName.classList.add("searched-song-name");
 
-      //get the album to which this song belongs
       const resultAlbum = document.createElement("a");
       resultAlbum.textContent = searchResults[i].album.name;
       result.appendChild(resultAlbum);
-      resultAlbum.classList.add("searched-song-album"); //  dynamically adding class names to p tags
+      resultAlbum.classList.add("searched-song-album");
       resultAlbum.href = searchResults[i].album.external_urls.spotify;
-      //create a div tag for song timing
+
       const songTime = document.createElement("div");
 
-      const time_ms = searchResults[i].duration_ms; // gets time in milliseconds
+      const time_ms = searchResults[i].duration_ms;
       const time_sec = millisToMinutesAndSeconds(time_ms);
       songTime.textContent = time_sec;
 
       result.appendChild(songTime);
-      songTime.classList.add("searched-song-time"); //  dynamically adding class names to span tags
+      songTime.classList.add("searched-song-time");
 
-      // append the search result to the results container
+      // Add an event listener to set the selected track URI when the track is clicked
+      result.addEventListener("click", async () => {
+        selectedTrackUri = searchResults[i].uri;
+        result.style.border = "4px solid green";
+        console.log("SELECTED TRACK : " + selectedTrackUri);
+        await onSpotifyWebPlaybackSDKReady(selectedTrackUri);
+      });
+
       resultsContainer.appendChild(result);
     }
+
+    // // Check if a track was selected and call the playTrack function
+    // if (selectedTrackUri !== "") {
+    //   // await playTrack(selectedTrackUri, accessToken, deviceId);
+    //   console.log("SELECTED TRACK : " + selectedTrackUri);
+    // }
   } catch (err) {
     console.log("COUDNT FIND WHAT YOU WERE LOOKING FOR");
   }
@@ -655,7 +657,7 @@ savedEp.addEventListener("click", (event) => {
   }, 10000);
 });
 
-window.onSpotifyWebPlaybackSDKReady = () => {
+const onSpotifyWebPlaybackSDKReady = async (trackUri) => {
   const player = new Spotify.Player({
     name: "My Web Playback SDK Player",
     getOAuthToken: (callback) => {
@@ -668,39 +670,37 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   // Add event listeners to the player
   player.addListener("ready", ({ device_id }) => {
     console.log("Device ID:", device_id);
-    playTrack(accessToken, device_id); // Start playing the track
+    playTrack(trackUri, accessToken, device_id); // Start playing the track
   });
 
   // Connect to the player
   player.connect();
 };
 
-const getDeviceId = async (accessToken) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  };
+// const getDeviceId = async (accessToken) => {
+//   const config = {
+//     headers: {
+//       Authorization: `Bearer ${accessToken}`,
+//     },
+//   };
 
-  try {
-    const response = await axios.get(
-      "https://api.spotify.com/v1/me/player/devices",
-      config
-    );
-    const devices = response.data.devices;
-    if (devices.length > 0) {
-      return devices[0].id;
-    } else {
-      console.log("No devices found");
-    }
-  } catch (err) {
-    console.log("Error retrieving devices");
-  }
-};
+//   try {
+//     const response = await axios.get(
+//       "https://api.spotify.com/v1/me/player/devices",
+//       config
+//     );
+//     const devices = response.data.devices;
+//     if (devices.length > 0) {
+//       return devices[0].id;
+//     } else {
+//       console.log("No devices found");
+//     }
+//   } catch (err) {
+//     console.log("Error retrieving devices");
+//   }
+// };
 
-const playTrack = async (accessToken, deviceId) => {
-  const trackUri = "spotify:track:1AhDOtG9vPSOmsWgNW0BEY";
-
+const playTrack = async (trackUri, accessToken, deviceId) => {
   const config = {
     headers: {
       Authorization: `Bearer ${accessToken}`,
