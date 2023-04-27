@@ -493,3 +493,8 @@ svg {
   border-left: 4px solid #09ec58;
   box-shadow: -5px 0 5px -5px rgba(235, 221, 221, 1);
 }
+
+footer {
+  z-index: 1000;
+  border: 1px solid red;
+}

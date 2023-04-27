@@ -1,5 +1,5 @@
-const clientId = "94593996f06140038693984df35d34a6"; // "8facece69f694f1597ac5242d3e2b5d6";
-const clientSecret = "97e64b3063884f98b128659c632c5df9"; // "89851d686eff40b6a9a6ba407033c1ad";
+const clientId = "8facece69f694f1597ac5242d3e2b5d6"; //"94593996f06140038693984df35d34a6";
+const clientSecret = "89851d686eff40b6a9a6ba407033c1ad"; //"97e64b3063884f98b128659c632c5df9";
 const redirectUri = "http://127.0.0.1:5500/index.html";
 // 8facece69f694f1597ac5242d3e2b5d6:36b49b5ce75642e2ba8901454852a3cf
 // did a ghetto style oauth for now will implement proper authentication later
@@ -164,12 +164,6 @@ searchBar.addEventListener("input", async function () {
 
       resultsContainer.appendChild(result);
     }
-
-    // // Check if a track was selected and call the playTrack function
-    // if (selectedTrackUri !== "") {
-    //   // await playTrack(selectedTrackUri, accessToken, deviceId);
-    //   console.log("SELECTED TRACK : " + selectedTrackUri);
-    // }
   } catch (err) {
     console.log("COUDNT FIND WHAT YOU WERE LOOKING FOR");
   }
@@ -180,9 +174,99 @@ function millisToMinutesAndSeconds(millis) {
   var seconds = ((millis % 60000) / 1000).toFixed(0);
   return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 }
+// const getDeviceId = async (accessToken) => {
+//   try {
+//     const response = await fetch(
+//       "https://api.spotify.com/v1/me/player/devices",
+//       {
+//         headers: {
+//           Authorization: `Bearer ${accessToken}`,
+//         },
+//       }
+//     );
+//     const data = await response.json();
+//     const device = data.devices.find(
+//       (d) => d.type === "Computer" && d.name.includes("Chrome")
+//     );
+//     if (device) {
+//       console.log("DEVICE ID FROM FUNCTION : " + device.id);
+//       return device.id;
+//     } else {
+//       console.log("No device found.");
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+const onSpotifyWebPlaybackSDKReady = async (trackUri) => {
+  const player = new Spotify.Player({
+    name: "My Web Playback SDK Player",
+    getOAuthToken: (callback) => {
+      // Call the callback function with your access token
+      callback(accessToken);
+    },
+    volume: 0.5,
+  });
+
+  // Add event listeners to the player
+  player.addListener("ready", ({ device_id }) => {
+    console.log("Device ID:", device_id);
+
+    playTrack(trackUri, accessToken, device_id); // Start playing the track
+  });
+
+  // Connect to the player
+  player.connect();
+};
+
+const playTrack = async (trackUri, accessToken, deviceId) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  const data = {
+    uris: [trackUri],
+  };
+
+  try {
+    await axios.put(
+      `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+      data,
+      config
+    );
+    // console.log("Track played successfully");
+    player.play(); // Start playing the track on the Web Playback SDK player
+  } catch (err) {
+    console.log("Error playing track: ", err.message);
+  }
+};
+
+const pauseTrack = async (accessToken, deviceId) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    await axios.put(
+      `https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`,
+      config
+    );
+
+    player.pause();
+  } catch (err) {
+    console.log("Error pausing track: ", err.message);
+  }
+};
+
 const searchBarFa = document.querySelector(".search-bar-fa");
 let crossButton, headings;
-
 searchBar.addEventListener("input", function () {
   // Check if search bar is not empty
   if (searchBar.value.trim().length > 0) {
@@ -660,71 +744,3 @@ savedEp.addEventListener("click", (event) => {
     savedEpisodes.classList.remove("highlight");
   }, 10000);
 });
-
-const onSpotifyWebPlaybackSDKReady = async (trackUri) => {
-  const player = new Spotify.Player({
-    name: "My Web Playback SDK Player",
-    getOAuthToken: (callback) => {
-      // Call the callback function with your access token
-      callback(accessToken);
-    },
-    volume: 0.5,
-  });
-
-  // Add event listeners to the player
-  player.addListener("ready", ({ device_id }) => {
-    console.log("Device ID:", device_id);
-    playTrack(trackUri, accessToken, device_id); // Start playing the track
-  });
-
-  // Connect to the player
-  player.connect();
-};
-
-// const getDeviceId = async (accessToken) => {
-//   const config = {
-//     headers: {
-//       Authorization: `Bearer ${accessToken}`,
-//     },
-//   };
-
-//   try {
-//     const response = await axios.get(
-//       "https://api.spotify.com/v1/me/player/devices",
-//       config
-//     );
-//     const devices = response.data.devices;
-//     if (devices.length > 0) {
-//       return devices[0].id;
-//     } else {
-//       console.log("No devices found");
-//     }
-//   } catch (err) {
-//     console.log("Error retrieving devices");
-//   }
-// };
-
-const playTrack = async (trackUri, accessToken, deviceId) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-  };
-
-  const data = {
-    uris: [trackUri],
-  };
-
-  try {
-    await axios.put(
-      `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
-      data,
-      config
-    );
-    // console.log("Track played successfully");
-    player.play(); // Start playing the track on the Web Playback SDK player
-  } catch (err) {
-    console.log("Error playing track: ", err.message);
-  }
-};
