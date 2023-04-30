@@ -1,5 +1,5 @@
-const clientId = "8facece69f694f1597ac5242d3e2b5d6"; //"94593996f06140038693984df35d34a6";
-const clientSecret = "89851d686eff40b6a9a6ba407033c1ad"; //"97e64b3063884f98b128659c632c5df9";
+const clientId = "94593996f06140038693984df35d34a6"; //"8facece69f694f1597ac5242d3e2b5d6";
+const clientSecret = "97e64b3063884f98b128659c632c5df9"; //"89851d686eff40b6a9a6ba407033c1ad";
 const redirectUri = "http://127.0.0.1:5500/index.html";
 // 8facece69f694f1597ac5242d3e2b5d6:36b49b5ce75642e2ba8901454852a3cf
 // did a ghetto style oauth for now will implement proper authentication later
@@ -9,357 +9,383 @@ const redirectUri = "http://127.0.0.1:5500/index.html";
 let accessToken = "";
 // let refreshToken = "";
 
-const getAccessToken = async (clientId, clientSecret, redirectUri, scope) => {
-  const authString = `${clientId}:${clientSecret}`;
-  const base64AuthString = btoa(authString); // we need a base64 string btoa() turns it into base64
+const getAccessToken = async(clientId, clientSecret, redirectUri, scope) => {
+    const authString = `${clientId}:${clientSecret}`;
+    const base64AuthString = btoa(authString); // we need a base64 string btoa() turns it into base64
 
-  const config = {
-    headers: {
-      Authorization: `Basic ${base64AuthString}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  };
-  const searchParams = new URLSearchParams(window.location.search);
-  const code = searchParams.get("code");
+    const config = {
+        headers: {
+            Authorization: `Basic ${base64AuthString}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+    };
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get("code");
 
-  const data = new URLSearchParams();
-  data.append("grant_type", "authorization_code");
-  data.append("code", code);
-  data.append("redirect_uri", redirectUri);
-  data.append("scope", scope);
+    const data = new URLSearchParams();
+    data.append("grant_type", "authorization_code");
+    data.append("code", code);
+    data.append("redirect_uri", redirectUri);
+    data.append("scope", scope);
 
-  try {
-    const response = await axios.post(
-      "https://accounts.spotify.com/api/token",
-      data,
-      config
-    );
+    try {
+        const response = await axios.post(
+            "https://accounts.spotify.com/api/token",
+            data,
+            config
+        );
 
-    accessToken = response.data.access_token; // Store the access token in the variable
-    //refreshToken = response.data.refresh_token; //store the response token in the variable
+        accessToken = response.data.access_token; // Store the access token in the variable
+        //refreshToken = response.data.refresh_token; //store the response token in the variable
 
-    displayPlaylistNames(accessToken);
+        displayPlaylistNames(accessToken);
 
-    displayTopArtists(accessToken);
+        displayTopArtists(accessToken);
 
-    displayRecentlyPlayedTracks(accessToken);
+        displayRecentlyPlayedTracks(accessToken);
 
-    displayTopTracks(accessToken);
+        displayTopTracks(accessToken);
 
-    displaySavedAlbums(accessToken);
+        displaySavedAlbums(accessToken);
 
-    displayRecommendedTracks(accessToken);
+        displayRecommendedTracks(accessToken);
 
-    displaySavedEpisodes(accessToken);
+        displaySavedEpisodes(accessToken);
+    } catch (error) {
+        console.log(error.message + " ---THE MAIN ACCESS TOKEN CALL");
 
-    // getDeviceId(accessToken);
-
-    // playTrack(accessToken);
-  } catch (error) {
-    console.log(error.message + " ---THE MAIN ACCESS TOKEN CALL");
-
-    //agar iss wale area mein code ja raha hai to firse login page pr redirect krdo http://127.0.0.1:5500/login.html
-    window.location.href = "http://127.0.0.1:5500/login.html";
-  }
+        //agar iss wale area mein code ja raha hai to firse login page pr redirect krdo http://127.0.0.1:5500/login.html
+        window.location.href = "http://127.0.0.1:5500/login.html";
+    }
 };
 
 getAccessToken(
-  clientId,
-  clientSecret,
-  redirectUri,
-  "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played user-read-playback-state user-modify-playback-state streaming"
+    clientId,
+    clientSecret,
+    redirectUri,
+    "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played user-read-playback-state user-modify-playback-state streaming"
 );
 
-const search = async (selectedOption, query, accessToken) => {
-  const configSearches = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-    params: {
-      q: query,
-      type: `${selectedOption}`,
-      market: "US",
-      limit: 20,
-      offset: 0,
-    },
-  };
+const search = async(selectedOption, query, accessToken) => {
+    const configSearches = {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        params: {
+            q: query,
+            type: `${selectedOption}`,
+            market: "US",
+            limit: 20,
+            offset: 0,
+        },
+    };
 
-  try {
-    const response = await axios.get(
-      "https://api.spotify.com/v1/search",
-      configSearches
-    );
-    console.log(response);
-    return response.data.tracks.items;
-  } catch (err) {
-    console.log("couldn't find what you were looking for");
-  }
+    try {
+        const response = await axios.get(
+            "https://api.spotify.com/v1/search",
+            configSearches
+        );
+        console.log(response);
+        return response.data.tracks.items;
+    } catch (err) {
+        console.log("couldn't find what you were looking for");
+    }
 };
 
 const select = document.querySelector("#select-options");
 const searchBar = document.querySelector(".search-bar");
 
-searchBar.addEventListener("input", async function () {
-  const selectedOption = "track";
-  const query = this.value;
+searchBar.addEventListener("input", async function() {
+    const selectedOption = "track";
+    const query = this.value;
 
-  try {
-    const searchResults = await search(selectedOption, query, accessToken);
-    console.log(searchResults);
+    try {
+        const searchResults = await search(selectedOption, query, accessToken);
+        console.log(searchResults);
 
-    const resultsContainer = document.querySelector(".results-container");
+        const resultsContainer = document.querySelector(".results-container");
 
-    resultsContainer.innerHTML = "";
+        resultsContainer.innerHTML = "";
 
-    let selectedTrackUri = "";
+        let selectedTrackUri = "";
 
-    for (let i = 0; i < 20; i++) {
-      const result = document.createElement("div");
-      result.classList.add("result-div");
+        for (let i = 0; i < 20; i++) {
+            const result = document.createElement("div");
+            result.classList.add("result-div");
 
-      const resultNumber = document.createElement("div");
-      resultNumber.textContent = i + 1;
-      result.appendChild(resultNumber);
-      resultNumber.classList.add("result-number");
+            const resultNumber = document.createElement("div");
+            resultNumber.textContent = i + 1;
+            result.appendChild(resultNumber);
+            resultNumber.classList.add("result-number");
 
-      const resultImg = document.createElement("img");
-      resultImg.src = searchResults[i].album.images[0].url;
-      result.appendChild(resultImg);
-      resultImg.classList.add("searched-img");
+            const resultImg = document.createElement("img");
+            resultImg.src = searchResults[i].album.images[0].url;
+            result.appendChild(resultImg);
+            resultImg.classList.add("searched-img");
 
-      const resultName = document.createElement("div");
-      resultName.textContent = searchResults[i].name;
-      result.appendChild(resultName);
+            const resultName = document.createElement("div");
+            resultName.textContent = searchResults[i].name;
+            result.appendChild(resultName);
 
-      const resultArtist = document.createElement("a");
-      resultArtist.textContent = searchResults[i].artists[0].name;
-      resultName.appendChild(resultArtist);
-      resultArtist.classList.add("searched-song-artist");
-      resultArtist.href = searchResults[i].artists[0].external_urls.spotify;
+            const resultArtist = document.createElement("a");
+            resultArtist.textContent = searchResults[i].artists[0].name;
+            resultName.appendChild(resultArtist);
+            resultArtist.classList.add("searched-song-artist");
+            resultArtist.href = searchResults[i].artists[0].external_urls.spotify;
 
-      resultName.classList.add("searched-song-name");
+            resultName.classList.add("searched-song-name");
 
-      const resultAlbum = document.createElement("a");
-      resultAlbum.textContent = searchResults[i].album.name;
-      result.appendChild(resultAlbum);
-      resultAlbum.classList.add("searched-song-album");
-      resultAlbum.href = searchResults[i].album.external_urls.spotify;
+            const resultAlbum = document.createElement("a");
+            resultAlbum.textContent = searchResults[i].album.name;
+            result.appendChild(resultAlbum);
+            resultAlbum.classList.add("searched-song-album");
+            resultAlbum.href = searchResults[i].album.external_urls.spotify;
 
-      const songTime = document.createElement("div");
+            const songTime = document.createElement("div");
 
-      const time_ms = searchResults[i].duration_ms;
-      const time_sec = millisToMinutesAndSeconds(time_ms);
-      songTime.textContent = time_sec;
+            const time_ms = searchResults[i].duration_ms;
+            const time_sec = millisToMinutesAndSeconds(time_ms);
+            songTime.textContent = time_sec;
 
-      result.appendChild(songTime);
-      songTime.classList.add("searched-song-time");
+            result.appendChild(songTime);
+            songTime.classList.add("searched-song-time");
 
-      // Add an event listener to set the selected track URI when the track is clicked
-      result.addEventListener("click", async () => {
-        selectedTrackUri = searchResults[i].uri;
-        result.style.border = "4px solid green";
-        console.log("SELECTED TRACK : " + selectedTrackUri);
-        await onSpotifyWebPlaybackSDKReady(selectedTrackUri);
-      });
+            // Add an event listener to set the selected track URI when the track is clicked
+            let num = 0;
+            result.addEventListener("click", async() => {
+                selectedTrackUri = searchResults[i].uri;
 
-      resultsContainer.appendChild(result);
+                console.log("SELECTED TRACK : " + selectedTrackUri);
+
+                if (num % 2 === 0) {
+                    result.classList.add("track-on-select");
+                    await onSpotifyWebPlaybackSDKReady(selectedTrackUri);
+                    num++;
+
+                    //for displaying the currently playing song in the playbar write a function and pass paramteres from here for eg : currently()
+                } else {
+                    await pauseTrack(accessToken);
+                    result.classList.remove("track-on-select");
+                    num++;
+                }
+                // apply the even odd thing for playing and pausing a track when num is 0(even) call playtack and if number is odd call pauseTrack keep incrementing the number
+            });
+
+            resultsContainer.appendChild(result);
+        }
+    } catch (err) {
+        console.log("COUDNT FIND WHAT YOU WERE LOOKING FOR");
     }
-  } catch (err) {
-    console.log("COUDNT FIND WHAT YOU WERE LOOKING FOR");
-  }
 });
 
 function millisToMinutesAndSeconds(millis) {
-  var minutes = Math.floor(millis / 60000);
-  var seconds = ((millis % 60000) / 1000).toFixed(0);
-  return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+    var minutes = Math.floor(millis / 60000);
+    var seconds = ((millis % 60000) / 1000).toFixed(0);
+    return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 }
-// const getDeviceId = async (accessToken) => {
-//   try {
-//     const response = await fetch(
-//       "https://api.spotify.com/v1/me/player/devices",
-//       {
-//         headers: {
-//           Authorization: `Bearer ${accessToken}`,
-//         },
-//       }
-//     );
-//     const data = await response.json();
-//     const device = data.devices.find(
-//       (d) => d.type === "Computer" && d.name.includes("Chrome")
-//     );
-//     if (device) {
-//       console.log("DEVICE ID FROM FUNCTION : " + device.id);
-//       return device.id;
-//     } else {
-//       console.log("No device found.");
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+const getDeviceId = async(accessToken) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+    };
 
-const onSpotifyWebPlaybackSDKReady = async (trackUri) => {
-  const player = new Spotify.Player({
-    name: "My Web Playback SDK Player",
-    getOAuthToken: (callback) => {
-      // Call the callback function with your access token
-      callback(accessToken);
-    },
-    volume: 0.5,
-  });
+    try {
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/player",
+            config
+        );
 
-  // Add event listeners to the player
-  player.addListener("ready", ({ device_id }) => {
-    console.log("Device ID:", device_id);
-
-    playTrack(trackUri, accessToken, device_id); // Start playing the track
-  });
-
-  // Connect to the player
-  player.connect();
+        // console.log("DEVICE ID FROM FUNCTION  : " + response.data.device.id);
+        return response.data.device.id;
+    } catch (err) {
+        console.log("Error getting active device ID: ", err.message);
+        return null;
+    }
 };
 
-const playTrack = async (trackUri, accessToken, deviceId) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-  };
+const onSpotifyWebPlaybackSDKReady = async(trackUri) => {
+    const player = new Spotify.Player({
+        name: "My Web Playback SDK Player",
+        getOAuthToken: (callback) => {
+            // Call the callback function with your access token
+            callback(accessToken);
+        },
+        volume: 0.5,
+    });
 
-  const data = {
-    uris: [trackUri],
-  };
+    // Add event listeners to the player
+    player.addListener("ready", ({ device_id }) => {
+        console.log("Device ID:", device_id);
+        playTrack(trackUri, accessToken, device_id); // Start playing the track
+    });
 
-  try {
-    await axios.put(
-      `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
-      data,
-      config
-    );
-    // console.log("Track played successfully");
-    player.play(); // Start playing the track on the Web Playback SDK player
-  } catch (err) {
-    console.log("Error playing track: ", err.message);
-  }
+    // Connect to the player
+    player.connect();
 };
 
-const pauseTrack = async (accessToken, deviceId) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-  };
+const playTrack = async(trackUri, accessToken, deviceId) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+    };
 
-  try {
-    await axios.put(
-      `https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`,
-      config
-    );
+    const data = {
+        uris: [trackUri],
+    };
 
-    player.pause();
-  } catch (err) {
-    console.log("Error pausing track: ", err.message);
-  }
+    try {
+        await axios.put(
+            `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+            data,
+            config
+        );
+        // console.log("Track played successfully");
+        player.play(); // Start playing the track on the Web Playback SDK player
+    } catch (err) {
+        console.log("Error playing track: ", err.message);
+    }
+};
+
+const pauseTrack = async(accessToken) => {
+    const device_id = await getDeviceId(accessToken);
+    console.log("DEVICE ID FROM FUNCTION  : " + device_id + " " + accessToken);
+    const config = {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+    };
+
+    try {
+        await axios.put(
+            `https://api.spotify.com/v1/me/player/pause?device_id=${device_id}`,
+            null,
+            config
+        );
+        player.pause();
+    } catch (err) {
+        console.log("Error pausing track: ", err.message);
+    }
+};
+const resumeTrack = async(accessToken) => {
+    const device_id = await getDeviceId(accessToken);
+
+    try {
+        await axios.put(
+            `https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        // Optional: You may want to update your player state after resuming the track
+        player.resume();
+    } catch (err) {
+        console.log("Error resuming track: ", err.message);
+    }
 };
 
 const searchBarFa = document.querySelector(".search-bar-fa");
 let crossButton, headings;
-searchBar.addEventListener("input", function () {
-  // Check if search bar is not empty
-  if (searchBar.value.trim().length > 0) {
-    // Create the cross button and add it to the search bar
-    if (!crossButton) {
-      crossButton = document.createElement("button");
-      crossButton.innerText = "X";
-      crossButton.classList.add("cross-button");
-      searchBarFa.appendChild(crossButton);
+searchBar.addEventListener("input", function() {
+    // Check if search bar is not empty
+    if (searchBar.value.trim().length > 0) {
+        // Create the cross button and add it to the search bar
+        if (!crossButton) {
+            crossButton = document.createElement("button");
+            crossButton.innerText = "X";
+            crossButton.classList.add("cross-button");
+            searchBarFa.appendChild(crossButton);
+        }
+
+        // Create the headings row and add it to the search bar container
+        if (!headings) {
+            headings = document.createElement("div");
+            headings.classList.add("headings");
+
+            const sNo = document.createElement("div");
+            sNo.innerText = "#";
+            headings.appendChild(sNo);
+
+            const sTitle = document.createElement("div");
+            sTitle.innerText = "Title";
+            headings.appendChild(sTitle);
+
+            const sEmpty = document.createElement("div");
+            sEmpty.innerText = "";
+            headings.appendChild(sEmpty);
+
+            const sAlbum = document.createElement("div");
+            sAlbum.innerText = "Album";
+            headings.appendChild(sAlbum);
+
+            const sDuration = document.createElement("div");
+            sDuration.innerText = "Duration";
+            headings.appendChild(sDuration);
+
+            const searchBarContainer = document.querySelector(
+                ".search-bar-container"
+            );
+            searchBarContainer.appendChild(headings);
+        }
+    } else {
+        // Remove the cross button from the search bar
+        if (crossButton) {
+            searchBarFa.removeChild(crossButton);
+            crossButton = null;
+        }
+
+        // Remove the headings row from the search bar container
+        if (headings) {
+            const searchBarContainer = document.querySelector(
+                ".search-bar-container"
+            );
+            searchBarContainer.removeChild(headings);
+            headings = null;
+        }
     }
-
-    // Create the headings row and add it to the search bar container
-    if (!headings) {
-      headings = document.createElement("div");
-      headings.classList.add("headings");
-
-      const sNo = document.createElement("div");
-      sNo.innerText = "#";
-      headings.appendChild(sNo);
-
-      const sTitle = document.createElement("div");
-      sTitle.innerText = "Title";
-      headings.appendChild(sTitle);
-
-      const sEmpty = document.createElement("div");
-      sEmpty.innerText = "";
-      headings.appendChild(sEmpty);
-
-      const sAlbum = document.createElement("div");
-      sAlbum.innerText = "Album";
-      headings.appendChild(sAlbum);
-
-      const sDuration = document.createElement("div");
-      sDuration.innerText = "Duration";
-      headings.appendChild(sDuration);
-
-      const searchBarContainer = document.querySelector(
-        ".search-bar-container"
-      );
-      searchBarContainer.appendChild(headings);
-    }
-  } else {
-    // Remove the cross button from the search bar
-    if (crossButton) {
-      searchBarFa.removeChild(crossButton);
-      crossButton = null;
-    }
-
-    // Remove the headings row from the search bar container
-    if (headings) {
-      const searchBarContainer = document.querySelector(
-        ".search-bar-container"
-      );
-      searchBarContainer.removeChild(headings);
-      headings = null;
-    }
-  }
 });
 
-searchBar.addEventListener("blur", function () {
-  // Remove the cross button and headings when search bar loses focus
-  if (crossButton) {
-    searchBarFa.removeChild(crossButton);
-    crossButton = null;
-  }
-
-  if (headings) {
-    const searchBarContainer = document.querySelector(".search-bar-container");
-    searchBarContainer.removeChild(headings);
-    headings = null;
-  }
-});
-
-searchBarFa.addEventListener("click", function (e) {
-  searchBarFa.classList.add("active"); //changes border color to greens showing that search bar is selected
-  // Remove the cross button and headings when cross button is clicked
-  if (e.target.classList.contains("cross-button")) {
-    searchBar.value = "";
-    searchBar.focus();
-
+searchBar.addEventListener("blur", function() {
+    // Remove the cross button and headings when search bar loses focus
     if (crossButton) {
-      searchBarFa.removeChild(crossButton);
-      crossButton = null;
+        searchBarFa.removeChild(crossButton);
+        crossButton = null;
     }
 
     if (headings) {
-      const searchBarContainer = document.querySelector(
-        ".search-bar-container"
-      );
-      searchBarContainer.removeChild(headings);
-      headings = null;
+        const searchBarContainer = document.querySelector(".search-bar-container");
+        searchBarContainer.removeChild(headings);
+        headings = null;
     }
-  }
+});
+
+searchBarFa.addEventListener("click", function(e) {
+    searchBarFa.classList.add("active"); //changes border color to greens showing that search bar is selected
+    // Remove the cross button and headings when cross button is clicked
+    if (e.target.classList.contains("cross-button")) {
+        searchBar.value = "";
+        searchBar.focus();
+
+        if (crossButton) {
+            searchBarFa.removeChild(crossButton);
+            crossButton = null;
+        }
+
+        if (headings) {
+            const searchBarContainer = document.querySelector(
+                ".search-bar-container"
+            );
+            searchBarContainer.removeChild(headings);
+            headings = null;
+        }
+    }
 });
 
 // focus on search-bar-fa when search is clicked on left-side container
@@ -367,40 +393,40 @@ const searchLink = document.querySelector(".search-link");
 
 // Add click event listener to the search link
 searchLink.addEventListener("click", (e) => {
-  e.preventDefault(); // Prevent the link from navigating to the href value
+    e.preventDefault(); // Prevent the link from navigating to the href value
 
-  searchBar.focus(); // Focus the search bar element
+    searchBar.focus(); // Focus the search bar element
 
-  searchBarFa.classList.add("active"); // Add active class to the search link
+    searchBarFa.classList.add("active"); // Add active class to the search link
 });
 
 // Add blur event listener to the search bar element
 searchBar.addEventListener("blur", () => {
-  searchBarFa.classList.remove("active"); // Remove active class from the search link
+    searchBarFa.classList.remove("active"); // Remove active class from the search link
 });
 
 // get the playlists
 //what you need to do is as soon as the window opens you have to display the name of the playlist which is basically an anchor tag
 //then if you click that anchor tag you get the tracks of that playlist
-const getPlaylists = async (accessToken) => {
-  try {
-    const configSearches = {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      params: {
-        limit: 6,
-        offset: 0,
-      },
-    };
-    const response = await axios.get(
-      "https://api.spotify.com/v1/me/playlists",
-      configSearches
-    );
-    return response.data;
-  } catch (err) {
-    console.log(err);
-  }
+const getPlaylists = async(accessToken) => {
+    try {
+        const configSearches = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                limit: 6,
+                offset: 0,
+            },
+        };
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/playlists",
+            configSearches
+        );
+        return response.data;
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 const playList = document.querySelector(".playlist");
@@ -408,339 +434,345 @@ const rightSideHomeStuff = document.querySelector(".right-side-home-stuff");
 const rightSideMain = document.querySelector(".right-side-main");
 const goodEvening = document.querySelector(".good-evening");
 
-const displayPlaylistNames = async (accessToken) => {
-  const playListNames = await getPlaylists(accessToken);
-  for (let i = 0; i < playListNames.items.length; i++) {
-    //for displaying the playlist on the left side
-    const playlistLink = document.createElement("a");
-    playlistLink.href = playListNames.items[i].external_urls.spotify;
-    playlistLink.textContent = playListNames.items[i].name;
-    playlistLink.classList.add("left-side-playlist");
-    playList.appendChild(playlistLink);
+const displayPlaylistNames = async(accessToken) => {
+    const playListNames = await getPlaylists(accessToken);
+    for (let i = 0; i < playListNames.items.length; i++) {
+        //for displaying the playlist on the left side
+        const playlistLink = document.createElement("a");
+        playlistLink.href = playListNames.items[i].external_urls.spotify;
+        playlistLink.textContent = playListNames.items[i].name;
+        playlistLink.classList.add("left-side-playlist");
+        playList.appendChild(playlistLink);
 
-    // for displaying the playlist on the right side homepage
+        // for displaying the playlist on the right side homepage
 
-    const playListDiv = document.createElement("div");
-    playListDiv.classList.add("right-playlist-container");
+        const playListDiv = document.createElement("div");
+        playListDiv.classList.add("right-playlist-container");
 
-    const playListAnchor = document.createElement("a");
-    const playListImg = document.createElement("img");
-    playListImg.src = playListNames.items[i].images[0].url;
-    playListImg.classList.add("right-side-playlist-img");
-    playListDiv.appendChild(playListImg);
+        const playListAnchor = document.createElement("a");
+        const playListImg = document.createElement("img");
+        playListImg.src = playListNames.items[i].images[0].url;
+        playListImg.classList.add("right-side-playlist-img");
+        playListDiv.appendChild(playListImg);
 
-    playListAnchor.href = playListNames.items[i].external_urls.spotify;
-    playListAnchor.textContent = playListNames.items[i].name;
-    playListAnchor.classList.add("play-List-Anchor");
-    goodEvening.appendChild(playListDiv);
-    playListDiv.appendChild(playListAnchor);
-  }
+        playListAnchor.href = playListNames.items[i].external_urls.spotify;
+        playListAnchor.textContent = playListNames.items[i].name;
+        playListAnchor.classList.add("play-List-Anchor");
+        goodEvening.appendChild(playListDiv);
+        playListDiv.appendChild(playListAnchor);
+    }
 };
 
 searchBar.addEventListener("input", () => {
-  if (searchBar.value !== "") {
-    rightSideMain.removeChild(rightSideHomeStuff);
-  } else {
-    rightSideMain.appendChild(rightSideHomeStuff);
-  }
+    if (searchBar.value !== "") {
+        rightSideMain.removeChild(rightSideHomeStuff);
+    } else {
+        rightSideMain.appendChild(rightSideHomeStuff);
+    }
 });
 
-const topArtists = async (accessToken) => {
-  try {
-    const configSearches = {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      params: {
-        ids: "5cj0lLjcoR7YOSnhnX0Po5,1Xyo4u8uXC1ZmMpatF05PJ,66CXWjxzNUsdJxJ2JdwvnR,3TVXtAsR1Inumwj472S9r4,2YZyLoL8N0Wb9xBt1NhZWg,1RyvyyTE3xzB2ZywiAwp0i,2jku7tDXc6XoB6MO2hFuqg,7qG3b048QCHVRO5Pv1T5lw,3MZsBdqDrRTJihTHQrO6Dq,7bXgB6jMjp9ATFy66eO08Z",
-      },
-    };
-    const response = await axios.get(
-      "https://api.spotify.com/v1/artists",
-      configSearches
-    );
-    return response.data.artists;
-  } catch (err) {
-    console.log(err);
-  }
+const topArtists = async(accessToken) => {
+    try {
+        const configSearches = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                ids: "5cj0lLjcoR7YOSnhnX0Po5,1Xyo4u8uXC1ZmMpatF05PJ,66CXWjxzNUsdJxJ2JdwvnR,3TVXtAsR1Inumwj472S9r4,2YZyLoL8N0Wb9xBt1NhZWg,1RyvyyTE3xzB2ZywiAwp0i,2jku7tDXc6XoB6MO2hFuqg,7qG3b048QCHVRO5Pv1T5lw,3MZsBdqDrRTJihTHQrO6Dq,7bXgB6jMjp9ATFy66eO08Z",
+            },
+        };
+        const response = await axios.get(
+            "https://api.spotify.com/v1/artists",
+            configSearches
+        );
+        return response.data.artists;
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 const topArtistsDiv = document.querySelector(".top-artists");
-const displayTopArtists = async (accessToken) => {
-  const response = await topArtists(accessToken);
+const displayTopArtists = async(accessToken) => {
+    const response = await topArtists(accessToken);
 
-  for (let i = 0; i < 10; i++) {
-    const topArtistDisplay = document.createElement("div");
-    topArtistDisplay.classList.add("top-artist-container");
+    for (let i = 0; i < 10; i++) {
+        const topArtistDisplay = document.createElement("div");
+        topArtistDisplay.classList.add("top-artist-container");
 
-    const topArtistImg = document.createElement("img");
-    topArtistImg.src = response[i].images[0].url;
-    topArtistImg.classList.add("top-artist-img");
-    topArtistDisplay.appendChild(topArtistImg);
+        const topArtistImg = document.createElement("img");
+        topArtistImg.src = response[i].images[0].url;
+        topArtistImg.classList.add("top-artist-img");
+        topArtistDisplay.appendChild(topArtistImg);
 
-    const topArtistLink = document.createElement("a");
-    topArtistLink.href = response[i].external_urls.spotify;
-    topArtistLink.textContent = response[i].name;
-    topArtistLink.classList.add("top-artist-link");
-    topArtistDisplay.appendChild(topArtistLink);
+        const topArtistLink = document.createElement("a");
+        topArtistLink.href = response[i].external_urls.spotify;
+        topArtistLink.textContent = response[i].name;
+        topArtistLink.classList.add("top-artist-link");
+        topArtistDisplay.appendChild(topArtistLink);
 
-    // const topArtistFolllowers = document.createElement("p");
-    // topArtistFolllowers.textContent =
-    //     "FOLLOWERS : " + response[i].followers.total;
-    // topArtistFolllowers.classList.add("top-artist-followers");
-    // topArtistDisplay.appendChild(topArtistFolllowers);
+        // const topArtistFolllowers = document.createElement("p");
+        // topArtistFolllowers.textContent =
+        //     "FOLLOWERS : " + response[i].followers.total;
+        // topArtistFolllowers.classList.add("top-artist-followers");
+        // topArtistDisplay.appendChild(topArtistFolllowers);
 
-    //when you click you should go to artits profile
+        //when you click you should go to artits profile
 
-    topArtistsDiv.appendChild(topArtistDisplay);
-  }
+        topArtistsDiv.appendChild(topArtistDisplay);
+    }
 };
 
 //write a function recently played tracks
-const recentlyPlayedTracks = async (accessToken) => {
-  try {
-    const configSearches = {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      params: {
-        limit: 10,
-        // after: 1484811043508,
-        offset: 0,
-      },
-    };
-    const response = await axios.get(
-      "https://api.spotify.com/v1/me/player/recently-played",
-      configSearches
-    );
-    return response.data;
-  } catch (err) {
-    console.log(err);
-  }
+const recentlyPlayedTracks = async(accessToken) => {
+    try {
+        const configSearches = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                limit: 10,
+                // after: 1484811043508,
+                offset: 0,
+            },
+        };
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/player/recently-played",
+            configSearches
+        );
+        return response.data;
+    } catch (err) {
+        console.log(err);
+    }
 };
 //write a function to display the recently played tracks
 const recentlyPlayedDiv = document.querySelector(".recently-played");
-const displayRecentlyPlayedTracks = async (accessToken) => {
-  const response = await recentlyPlayedTracks(accessToken);
-  for (let i = 0; i < 10; i++) {
-    const recentlyPlayedTrackDisplay = document.createElement("div");
-    recentlyPlayedTrackDisplay.classList.add("recently-played-track-container");
+const displayRecentlyPlayedTracks = async(accessToken) => {
+    const response = await recentlyPlayedTracks(accessToken);
+    for (let i = 0; i < 10; i++) {
+        const recentlyPlayedTrackDisplay = document.createElement("div");
+        recentlyPlayedTrackDisplay.classList.add("recently-played-track-container");
 
-    const recentlyPlayedTrackImg = document.createElement("img");
-    recentlyPlayedTrackImg.src = response.items[i].track.album.images[0].url;
-    recentlyPlayedTrackImg.classList.add("recently-played-track-img");
-    recentlyPlayedTrackDisplay.appendChild(recentlyPlayedTrackImg);
+        const recentlyPlayedTrackImg = document.createElement("img");
+        recentlyPlayedTrackImg.src = response.items[i].track.album.images[0].url;
+        recentlyPlayedTrackImg.classList.add("recently-played-track-img");
+        recentlyPlayedTrackDisplay.appendChild(recentlyPlayedTrackImg);
 
-    const recentlyPlayedTrackLink = document.createElement("a");
-    recentlyPlayedTrackLink.href =
-      response.items[i].track.external_urls.spotify;
-    recentlyPlayedTrackLink.textContent = response.items[i].track.name;
-    recentlyPlayedTrackLink.classList.add("recently-played-track-link");
-    recentlyPlayedTrackDisplay.appendChild(recentlyPlayedTrackLink);
+        const recentlyPlayedTrackLink = document.createElement("a");
+        recentlyPlayedTrackLink.href =
+            response.items[i].track.external_urls.spotify;
+        recentlyPlayedTrackLink.textContent = response.items[i].track.name;
+        recentlyPlayedTrackLink.classList.add("recently-played-track-link");
+        recentlyPlayedTrackDisplay.appendChild(recentlyPlayedTrackLink);
 
-    recentlyPlayedDiv.appendChild(recentlyPlayedTrackDisplay);
-  }
+        recentlyPlayedDiv.appendChild(recentlyPlayedTrackDisplay);
+    }
 };
 
-const topTracks = async (accessToken) => {
-  try {
-    const configSearches = {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      params: {
-        limit: 10,
-        offset: 0,
-      },
-    };
-    const response = await axios.get(
-      "https://api.spotify.com/v1/me/top/tracks",
-      configSearches
-    );
-    return response.data;
-  } catch (err) {
-    console.log(err);
-  }
+const topTracks = async(accessToken) => {
+    try {
+        const configSearches = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                limit: 10,
+                offset: 0,
+            },
+        };
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/top/tracks",
+            configSearches
+        );
+        return response.data;
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 const yourTopTracks = document.querySelector(".top-tracks");
-const displayTopTracks = async (accessToken) => {
-  const response = await topTracks(accessToken);
-  for (let i = 0; i < 10; i++) {
-    const topTracksDisplay = document.createElement("div");
-    topTracksDisplay.classList.add("top-tracks-container");
+const displayTopTracks = async(accessToken) => {
+    const response = await topTracks(accessToken);
+    for (let i = 0; i < 10; i++) {
+        const topTracksDisplay = document.createElement("div");
+        topTracksDisplay.classList.add("top-tracks-container");
 
-    const topTracksImg = document.createElement("img");
-    topTracksImg.src = response.items[i].album.images[0].url;
-    topTracksImg.classList.add("top-tracks-img");
-    topTracksDisplay.appendChild(topTracksImg);
+        const topTracksImg = document.createElement("img");
+        topTracksImg.src = response.items[i].album.images[0].url;
+        topTracksImg.classList.add("top-tracks-img");
+        topTracksDisplay.appendChild(topTracksImg);
 
-    const topTracksLink = document.createElement("a");
-    topTracksLink.href = response.items[i].album.external_urls.spotify;
-    topTracksLink.textContent = response.items[i].name;
-    topTracksLink.classList.add("top-tracks-link");
-    topTracksDisplay.appendChild(topTracksLink);
+        const topTracksLink = document.createElement("a");
+        topTracksLink.href = response.items[i].album.external_urls.spotify;
+        topTracksLink.textContent = response.items[i].name;
+        topTracksLink.classList.add("top-tracks-link");
+        topTracksDisplay.appendChild(topTracksLink);
 
-    yourTopTracks.appendChild(topTracksDisplay);
-  }
+        yourTopTracks.appendChild(topTracksDisplay);
+    }
 };
 
-const mySavedAlbums = async (accessToken) => {
-  try {
-    const configSearches = {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      params: {
-        limit: 10,
-        offset: 0,
-        market: "ES",
-      },
-    };
-    const response = await axios.get(
-      "https://api.spotify.com/v1/me/albums",
-      configSearches
-    );
-    return response.data;
-  } catch (err) {
-    console.log(err);
-  }
+const mySavedAlbums = async(accessToken) => {
+    try {
+        const configSearches = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                limit: 10,
+                offset: 0,
+                market: "ES",
+            },
+        };
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/albums",
+            configSearches
+        );
+        return response.data;
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 const savedAlbums = document.querySelector(".saved-albums");
-const displaySavedAlbums = async (accessToken) => {
-  const response = await mySavedAlbums(accessToken);
-  for (let i = 0; i < response.items.length; i++) {
-    const savedAlbumsDiv = document.createElement("div");
-    savedAlbumsDiv.classList.add("saved-albums-container");
+const displaySavedAlbums = async(accessToken) => {
+    const response = await mySavedAlbums(accessToken);
+    for (let i = 0; i < response.items.length; i++) {
+        const savedAlbumsDiv = document.createElement("div");
+        savedAlbumsDiv.classList.add("saved-albums-container");
 
-    const savedAlbumsImg = document.createElement("img");
-    savedAlbumsImg.src = response.items[i].album.images[0].url;
-    savedAlbumsImg.classList.add("saved-albums-img");
-    savedAlbumsDiv.appendChild(savedAlbumsImg);
+        const savedAlbumsImg = document.createElement("img");
+        savedAlbumsImg.src = response.items[i].album.images[0].url;
+        savedAlbumsImg.classList.add("saved-albums-img");
+        savedAlbumsDiv.appendChild(savedAlbumsImg);
 
-    const savedAlbumsLink = document.createElement("a");
-    savedAlbumsLink.href = response.items[i].album.external_urls.spotify;
-    savedAlbumsLink.textContent = response.items[i].album.name; // fix
-    savedAlbumsLink.classList.add("saved-albums-link");
-    savedAlbumsDiv.appendChild(savedAlbumsLink); // fix
+        const savedAlbumsLink = document.createElement("a");
+        savedAlbumsLink.href = response.items[i].album.external_urls.spotify;
+        savedAlbumsLink.textContent = response.items[i].album.name; // fix
+        savedAlbumsLink.classList.add("saved-albums-link");
+        savedAlbumsDiv.appendChild(savedAlbumsLink); // fix
 
-    savedAlbums.appendChild(savedAlbumsDiv); // fix
-  }
+        savedAlbums.appendChild(savedAlbumsDiv); // fix
+    }
 };
 
-const getRecommendations = async (accessToken, artistIds) => {
-  try {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      params: {
-        seed_artists: artistIds.join(","),
-        limit: 10,
-        market: "IN",
-      },
-    };
-    const response = await axios.get(
-      "https://api.spotify.com/v1/recommendations",
-      config
-    );
-    return response.data.tracks;
-  } catch (err) {
-    console.log(err);
-  }
+const getRecommendations = async(accessToken, artistIds) => {
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                seed_artists: artistIds.join(","),
+                limit: 10,
+                market: "IN",
+            },
+        };
+        const response = await axios.get(
+            "https://api.spotify.com/v1/recommendations",
+            config
+        );
+        return response.data.tracks;
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 const recommendations = document.querySelector(".recomended-tracks");
-const displayRecommendedTracks = async (accessToken) => {
-  const artistIds = [
-    "1Xyo4u8uXC1ZmMpatF05PJ",
-    "3TVXtAsR1Inumwj472S9r4",
-    "2YZyLoL8N0Wb9xBt1NhZWg",
-    "0uq5PttqEjj3IH1bzwcrXF",
-    "66CXWjxzNUsdJxJ2JdwvnR",
-  ];
+const displayRecommendedTracks = async(accessToken) => {
+    const artistIds = [
+        "1Xyo4u8uXC1ZmMpatF05PJ",
+        "3TVXtAsR1Inumwj472S9r4",
+        "2YZyLoL8N0Wb9xBt1NhZWg",
+        "0uq5PttqEjj3IH1bzwcrXF",
+        "66CXWjxzNUsdJxJ2JdwvnR",
+    ];
 
-  const tracks = await getRecommendations(accessToken, artistIds);
+    const tracks = await getRecommendations(accessToken, artistIds);
 
-  for (let i = 0; i < tracks.length; i++) {
-    const track = tracks[i];
-    const recommendationDiv = document.createElement("div");
-    recommendationDiv.classList.add("recommendation-container");
+    for (let i = 0; i < tracks.length; i++) {
+        const track = tracks[i];
+        const recommendationDiv = document.createElement("div");
+        recommendationDiv.classList.add("recommendation-container");
 
-    const recommendationImg = document.createElement("img");
-    recommendationImg.src = track.album.images[0].url;
-    recommendationImg.classList.add("recommendation-img");
-    recommendationDiv.appendChild(recommendationImg);
+        const recommendationImg = document.createElement("img");
+        recommendationImg.src = track.album.images[0].url;
+        recommendationImg.classList.add("recommendation-img");
+        recommendationDiv.appendChild(recommendationImg);
 
-    const recommendationLink = document.createElement("a");
-    recommendationLink.href = track.external_urls.spotify;
-    recommendationLink.textContent = track.name;
-    recommendationLink.classList.add("recommendation-link");
-    recommendationDiv.appendChild(recommendationLink);
+        const recommendationLink = document.createElement("a");
+        recommendationLink.href = track.external_urls.spotify;
+        recommendationLink.textContent = track.name;
+        recommendationLink.classList.add("recommendation-link");
+        recommendationDiv.appendChild(recommendationLink);
 
-    recommendations.appendChild(recommendationDiv);
-  }
+        recommendations.appendChild(recommendationDiv);
+    }
 };
 
-const mySavedEpisodes = async (accessToken) => {
-  try {
-    const configSearches = {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      params: {
-        limit: 10,
-        offset: 0,
-      },
-    };
-    const response = await axios.get(
-      "https://api.spotify.com/v1/me/episodes",
-      configSearches
-    );
+const mySavedEpisodes = async(accessToken) => {
+    try {
+        const configSearches = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                limit: 10,
+                offset: 0,
+            },
+        };
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/episodes",
+            configSearches
+        );
 
-    return response.data;
-  } catch (err) {
-    console.log(err);
-  }
+        return response.data;
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 const savedEpisodes = document.querySelector(".saved-episodes");
-const displaySavedEpisodes = async (accessToken) => {
-  const response = await mySavedEpisodes(accessToken);
-  for (let i = 0; i < response.items.length; i++) {
-    const savedEpisodesDiv = document.createElement("div");
-    savedEpisodesDiv.classList.add("saved-episodes-container");
+const displaySavedEpisodes = async(accessToken) => {
+    const response = await mySavedEpisodes(accessToken);
+    for (let i = 0; i < response.items.length; i++) {
+        const savedEpisodesDiv = document.createElement("div");
+        savedEpisodesDiv.classList.add("saved-episodes-container");
 
-    const savedEpisodesImg = document.createElement("img");
-    savedEpisodesImg.src = response.items[i].episode.images[0].url;
-    savedEpisodesImg.classList.add("saved-episodes-img");
-    savedEpisodesDiv.appendChild(savedEpisodesImg);
+        const savedEpisodesImg = document.createElement("img");
+        savedEpisodesImg.src = response.items[i].episode.images[0].url;
+        savedEpisodesImg.classList.add("saved-episodes-img");
+        savedEpisodesDiv.appendChild(savedEpisodesImg);
 
-    const savedEpisodesLink = document.createElement("a");
-    savedEpisodesLink.href = response.items[i].episode.external_urls.spotify;
-    savedEpisodesLink.textContent = response.items[i].episode.name;
-    savedEpisodesLink.classList.add("saved-episodes-link");
-    savedEpisodesDiv.appendChild(savedEpisodesLink);
+        const savedEpisodesLink = document.createElement("a");
+        savedEpisodesLink.href = response.items[i].episode.external_urls.spotify;
+        savedEpisodesLink.textContent = response.items[i].episode.name;
+        savedEpisodesLink.classList.add("saved-episodes-link");
+        savedEpisodesDiv.appendChild(savedEpisodesLink);
 
-    savedEpisodes.appendChild(savedEpisodesDiv);
-  }
+        savedEpisodes.appendChild(savedEpisodesDiv);
+    }
 };
 
 const savedEp = document.querySelector(".your-saved-episodes");
 // const savedEpDiv = document.querySelector(".saved-episodes-container");
 savedEp.addEventListener("click", (event) => {
-  event.preventDefault(); // prevent the default link behavior
+    event.preventDefault(); // prevent the default link behavior
 
-  savedEpisodes.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-    inline: "nearest",
-  }); // scroll to the saved episodes section
+    savedEpisodes.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
+    }); // scroll to the saved episodes section
 
-  // add a CSS class to highlight the saved episodes section
-  savedEpisodes.classList.add("highlight");
-  setTimeout(() => {
-    savedEpisodes.classList.remove("highlight");
-  }, 10000);
+    // add a CSS class to highlight the saved episodes section
+    savedEpisodes.classList.add("highlight");
+    setTimeout(() => {
+        savedEpisodes.classList.remove("highlight");
+    }, 10000);
+});
+
+const likeButton = document.querySelector(".like-button");
+
+likeButton.addEventListener("click", () => {
+    likeButton.classList.toggle("clicked");
 });

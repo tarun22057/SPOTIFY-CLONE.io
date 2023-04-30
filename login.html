@@ -1,61 +1,63 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <title>Login</title>
-  </head>
+</head>
 
-  <body>
+<body>
     <h1>Login to my app</h1>
     <button class="login-button">Login with Spotify</button>
 
     <script>
-      const clientId = "8facece69f694f1597ac5242d3e2b5d6"; //"94593996f06140038693984df35d34a6";
-      const clientSecret = "89851d686eff40b6a9a6ba407033c1ad"; //"97e64b3063884f98b128659c632c5df9";
-      const redirectUri = "http://127.0.0.1:5500/index.html";
-      const getAuthCode = async (clientId, redirectUri, scope) => {
-        const url = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(
+        const clientId = "94593996f06140038693984df35d34a6"; //"8facece69f694f1597ac5242d3e2b5d6";
+        const clientSecret = "97e64b3063884f98b128659c632c5df9"; //"89851d686eff40b6a9a6ba407033c1ad";
+        const redirectUri = "http://127.0.0.1:5500/index.html";
+        const getAuthCode = async(clientId, redirectUri, scope) => {
+            const url = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(
           redirectUri
         )}&scope=${encodeURIComponent(scope)}`;
 
-        // Create an anchor element
-        const anchor = document.createElement("a");
-        anchor.setAttribute("href", url);
-        anchor.setAttribute("target", "_blank");
-        document.body.appendChild(anchor);
+            // Create an anchor element
+            const anchor = document.createElement("a");
+            anchor.setAttribute("href", url);
+            anchor.setAttribute("target", "_blank");
+            document.body.appendChild(anchor);
 
-        // Programmatically click the anchor element to open the authorization page in a new tab
-        anchor.click();
+            // Programmatically click the anchor element to open the authorization page in a new tab
+            anchor.click();
 
-        // Wait for the user to be redirected back to the redirect URI
-        return new Promise((resolve, reject) => {
-          const onRedirect = (event) => {
-            if (event.origin !== window.location.origin) {
-              return;
-            }
+            // Wait for the user to be redirected back to the redirect URI
+            return new Promise((resolve, reject) => {
+                const onRedirect = (event) => {
+                    if (event.origin !== window.location.origin) {
+                        return;
+                    }
 
-            const params = new URLSearchParams(event.data);
-            const code = params.get("code");
+                    const params = new URLSearchParams(event.data);
+                    const code = params.get("code");
 
-            if (code) {
-              window.removeEventListener("message", onRedirect);
-              resolve(code);
-            }
-          };
+                    if (code) {
+                        window.removeEventListener("message", onRedirect);
+                        resolve(code);
+                    }
+                };
 
-          window.addEventListener("message", onRedirect);
+                window.addEventListener("message", onRedirect);
+            });
+        };
+
+        const loginButton = document.querySelector(".login-button");
+
+        loginButton.addEventListener("click", () => {
+            getAuthCode(
+                clientId,
+                redirectUri,
+                "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played user-read-playback-state user-modify-playback-state streaming"
+            );
         });
-      };
-
-      const loginButton = document.querySelector(".login-button");
-
-      loginButton.addEventListener("click", () => {
-        getAuthCode(
-          clientId,
-          redirectUri,
-          "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played user-read-playback-state user-modify-playback-state streaming"
-        );
-      });
     </script>
-  </body>
+</body>
+
 </html>
