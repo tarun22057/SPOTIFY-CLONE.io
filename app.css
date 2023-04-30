@@ -79,13 +79,14 @@ time,
 mark,
 audio,
 video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
 }
+
 
 /* HTML5 display-role reset for older browsers */
 
@@ -100,306 +101,310 @@ hgroup,
 menu,
 nav,
 section {
-  display: block;
+    display: block;
 }
 
 body {
-  line-height: 1;
+    line-height: 1;
 }
 
 ol,
 ul {
-  list-style: none;
+    list-style: none;
 }
 
 blockquote,
 q {
-  quotes: none;
+    quotes: none;
 }
 
 blockquote:before,
 blockquote:after,
 q:before,
 q:after {
-  content: "";
-  content: none;
+    content: "";
+    content: none;
 }
 
 table {
-  border-collapse: collapse;
-  border-spacing: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
 }
 
 textarea:focus,
 input:focus {
-  outline: none;
+    outline: none;
 }
 
 ::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
 a {
-  color: rgb(159, 159, 159);
-  text-decoration: none;
-  font-size: 0.65rem;
-  letter-spacing: 0.1rem;
+    color: rgb(159, 159, 159);
+    text-decoration: none;
+    font-size: 0.65rem;
+    letter-spacing: 0.1rem;
 }
 
 a:hover {
-  color: white;
-  transition: color 0.25s ease;
+    color: white;
+    transition: color 0.25s ease;
 }
 
 body {
-  color: white;
-  background-color: #121212;
-  display: flex;
-  flex-direction: row;
-  font-family: "Montserrat", sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  height: 100%;
+    color: white;
+    background-color: #121212;
+    display: flex;
+    flex-direction: row;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    height: 100%;
 }
 
 .right-side-main {
-  background-color: #121212;
-  position: relative;
-  margin-left: 15%;
-  width: 85%;
-  /* border: 10px solid green; */
-  height: 100%;
-  padding: 1.3em 0em 0em 2em;
+    background-color: #121212;
+    position: relative;
+    margin-left: 15%;
+    width: 85%;
+    /* border: 10px solid green; */
+    height: 100%;
+    padding: 1.3em 0em 0em 2em;
 }
 
 .search-bar {
-  border: none;
-  width: 90%;
+    border: none;
+    width: 90%;
 }
 
 .search-bar-fa {
-  /*search bar + icon*/
-  border: 1.3px solid black;
-  width: 28%;
-  display: flex;
-  gap: 0.5em;
-  align-items: center;
-  padding: 1em;
-  border-radius: 50px;
-  background-color: white;
+    /*search bar + icon*/
+    border: 1.3px solid black;
+    width: 28%;
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    padding: 1em;
+    border-radius: 50px;
+    background-color: white;
 }
 
 .active {
-  border: 4px solid #09ec58;
+    border: 4px solid #09ec58;
 }
 
 .results-container {
-  z-index: 999;
-  width: 100%;
-  /* border: 1px solid green; */
+    z-index: 999;
+    width: 100%;
+    /* border: 1px solid green; */
 }
+
 
 /*these are the dynamically added classes from js*/
 
 svg {
-  height: 20px;
-  width: 20px;
+    height: 20px;
+    width: 20px;
 }
 
 .result-div {
-  display: grid;
-  align-items: center;
-  grid-template-columns: 1em 5em 45em 30em 10em;
-  gap: 1em;
-  padding: 0.5em 0.75em;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1em 5em 45em 30em 10em;
+    gap: 1em;
+    padding: 0.5em 0.75em;
 }
 
 .result-div:hover {
-  background-color: #181818;
-  border-radius: 12px;
-  cursor: pointer;
-  width: 96%;
+    background-color: #262626;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 96%;
 }
 
 .headings {
-  display: grid;
-  align-items: center;
-  grid-template-columns: 1em 5em 45em 30em 10em;
-  padding: 1em 0.75em;
-  gap: 1em;
-  border-bottom: 1px solid white;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1em 5em 45em 30em 10em;
+    padding: 1em 0.75em;
+    gap: 1em;
+    border-bottom: 1px solid white;
 }
+
 
 /* .result-number {
     border: 1px solid black;
 } */
 
 .searched-img {
-  /* border: 1px solid red; */
-  width: 40px;
-  height: 40px;
-  padding: 0.3em;
+    /* border: 1px solid red; */
+    width: 40px;
+    height: 40px;
+    padding: 0.3em;
 }
 
 .searched-song-name {
-  /* border: 1px solid green; */
-  display: flex;
-  flex-direction: column;
-  gap: 0.65em;
+    /* border: 1px solid green; */
+    display: flex;
+    flex-direction: column;
+    gap: 0.65em;
 }
 
 .searched-song-artist {
-  font-size: 0.8rem;
-  font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 .searched-song-album {
-  font-size: 0.8rem;
-  font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 .searched-song-artist:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .searched-song-album:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
+
 
 /* .searched-song-album {
     border: 1px solid red;
 } */
 
 .searched-song-time {
-  /* border: 1px solid red; */
-  text-align: center;
+    /* border: 1px solid red; */
+    text-align: center;
 }
 
 .cross-button {
-  background: none;
-  border: none;
-  font-weight: bold;
-  font-size: 18px;
-  color: black;
+    background: none;
+    border: none;
+    font-weight: bold;
+    font-size: 18px;
+    color: black;
 }
+
 
 /* LEFT SIDE STYLING */
 
 .left-side {
-  /* border: 1px solid blue; */
-  background-color: #000000;
-  min-width: 15%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 1;
-  overflow-y: hidden;
-  display: flex;
-  justify-content: center;
+    /* border: 1px solid blue; */
+    background-color: #000000;
+    min-width: 15%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1;
+    overflow-y: hidden;
+    display: flex;
+    justify-content: center;
 }
 
 .left-conatiner {
-  width: 88%;
-  /* border: 1px solid red; */
+    width: 88%;
+    /* border: 1px solid red; */
 }
 
 .logo {
-  /* border: 1px solid red; */
-  display: flex;
-  align-items: center;
+    /* border: 1px solid red; */
+    display: flex;
+    align-items: center;
 }
 
 .menu {
-  /* border: 1px solid green; */
-  display: flex;
-  flex-direction: column;
-  margin: 2em 0 2em 0;
+    /* border: 1px solid green; */
+    display: flex;
+    flex-direction: column;
+    margin: 2em 0 2em 0;
 }
 
 .menu a {
-  /* border: 1px solid yellow; */
-  display: flex;
-  align-items: center;
-  gap: 1em;
+    /* border: 1px solid yellow; */
+    display: flex;
+    align-items: center;
+    gap: 1em;
 }
 
 .menu-2 {
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid rgb(158, 158, 158);
-  padding-bottom: 2em;
-  margin: 2em 0 2em 0;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid rgb(158, 158, 158);
+    padding-bottom: 2em;
+    margin: 2em 0 2em 0;
 }
 
 .menu-2 a {
-  display: flex;
-  align-items: center;
-  gap: 1em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
 }
 
 .left-side-playlist {
-  display: flex;
-  gap: 1em;
-  font-size: 0.75rem;
-  padding-top: 1.5em;
+    display: flex;
+    gap: 1em;
+    font-size: 0.75rem;
+    padding-top: 1.5em;
 }
 
 .right-side-home-stuff {
-  /* border: 1px solid red; */
-  padding: 1em;
+    /* border: 1px solid red; */
+    padding: 1em;
 }
 
 .good-eve-h1 {
-  margin-top: 2em;
-  /* margin-left: 1.5em; */
-  font-size: 1.2rem;
+    margin-top: 2em;
+    /* margin-left: 1.5em; */
+    font-size: 1.2rem;
 }
 
 .good-evening {
-  padding: 2em 2em 2em 0em;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 1.3em;
+    padding: 2em 2em 2em 0em;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 1.3em;
 }
 
 .good-evening:nth-child(n + 4) {
-  grid-column: 1/3;
+    grid-column: 1/3;
 }
 
 .right-playlist-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  border-radius: 5px;
-  background: #181818;
-  /* transition: transform 0.3s ease, background-color 0.5s ease; */
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    border-radius: 5px;
+    background: #181818;
+    /* transition: transform 0.3s ease, background-color 0.5s ease; */
 }
 
 .right-side-playlist-img {
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-  height: 100%;
-  width: 20%;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    height: 100%;
+    width: 20%;
 }
 
 .right-playlist-container:hover {
-  /* transform: scale(1.02); */
-  background-color: #262626;
+    /* transform: scale(1.02); */
+    background-color: #262626;
 }
 
 .play-List-Anchor {
-  font-size: 0.9rem;
-  color: white;
+    font-size: 0.9rem;
+    color: white;
 }
 
 .play-List-Anchor:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .play-list-conatiner h1 {
-  font-size: 1.2rem;
-  margin: 2em 0em 0.5em 0em;
+    font-size: 1.2rem;
+    margin: 2em 0em 0.5em 0em;
 }
 
 .top-artists,
@@ -407,10 +412,10 @@ svg {
 .top-tracks,
 .saved-albums,
 .recomended-tracks {
-  display: flex;
-  flex-direction: row;
-  overflow-y: scroll;
-  gap: 2em;
+    display: flex;
+    flex-direction: row;
+    overflow-y: scroll;
+    gap: 2em;
 }
 
 .top-artist-img,
@@ -419,10 +424,10 @@ svg {
 .saved-albums-img,
 .recommendation-img,
 .saved-episodes-img {
-  height: 150px;
-  width: 150px;
-  border-radius: 7px;
-  box-shadow: 0px 0px 10px rgba(235, 221, 221, 0.5);
+    height: 150px;
+    width: 150px;
+    border-radius: 7px;
+    box-shadow: 0px 0px 10px rgba(235, 221, 221, 0.5);
 }
 
 .top-artist-container,
@@ -430,16 +435,16 @@ svg {
 .top-tracks-container,
 .saved-albums-container,
 .recommendation-container {
-  /* border: 1px solid red; */
-  width: 170px;
-  height: 230px;
-  display: flex;
-  flex-direction: column;
-  gap: 2em;
-  border-radius: 7px;
-  background-color: #181818;
-  padding: 1.5em;
-  /* transition: transform 0.3s ease, background-color 0.5s ease; */
+    /* border: 1px solid red; */
+    width: 170px;
+    height: 230px;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    border-radius: 7px;
+    background-color: #181818;
+    padding: 1.5em;
+    /* transition: transform 0.3s ease, background-color 0.5s ease; */
 }
 
 .top-artist-container:hover,
@@ -448,8 +453,8 @@ svg {
 .saved-albums-container:hover,
 .recommendation-container:hover,
 .saved-episodes-container:hover {
-  background-color: #262626;
-  /* transform: scale(1.01); */
+    background-color: #262626;
+    /* transform: scale(1.01); */
 }
 
 .top-artist-link,
@@ -458,7 +463,7 @@ svg {
 .saved-albums-link,
 .recommendation-link,
 .saved-episodes-link {
-  font-size: 0.9rem;
+    font-size: 0.9rem;
 }
 
 .top-artist-link:hover,
@@ -467,34 +472,111 @@ svg {
 .saved-albums-link:hover,
 .recommendation-link:hover,
 .saved-episodes-link:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .saved-episodes {
-  display: flex;
-  flex-direction: row;
-  gap: 2em;
-  overflow-y: scroll;
+    display: flex;
+    flex-direction: row;
+    gap: 2em;
+    overflow-y: scroll;
 }
 
 .saved-episodes-container {
-  padding: 2em;
-  display: flex;
-  gap: 1.7em;
-  height: 150px;
-  width: 350px;
-  border-radius: 7px;
-  background-color: #181818;
-  /* transition: transform 0.3s ease, background-color 0.5s ease; */
+    padding: 2em;
+    display: flex;
+    gap: 1.7em;
+    height: 150px;
+    width: 350px;
+    border-radius: 7px;
+    background-color: #181818;
+    /* transition: transform 0.3s ease, background-color 0.5s ease; */
 }
 
 .highlight {
-  /*this property actives when you click saved episodes on left side  */
-  border-left: 4px solid #09ec58;
-  box-shadow: -5px 0 5px -5px rgba(235, 221, 221, 1);
+    /*this property actives when you click saved episodes on left side  */
+    border-left: 4px solid #09ec58;
+    box-shadow: -5px 0 5px -5px rgba(235, 221, 221, 1);
 }
 
-footer {
-  z-index: 1000;
-  border: 1px solid red;
+.play-bar {
+    z-index: 1000;
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    /* height: ; */
+    display: flex;
+    justify-content: space-between;
+    background-color: #262626;
+}
+
+.play-bar-left {
+    display: flex;
+}
+
+.play-bar-middle {
+    display: flex;
+}
+
+.play-bar-right {
+    display: flex;
+}
+
+.track-on-select {
+    background-color: #5a5a5a;
+    /* border: 1.3px solid #09ec58; */
+    border-radius: 12px;
+    width: 96%;
+    /* pointer-events: none; */
+}
+
+
+/* .like-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.like-button svg {
+    fill: #ffffff;
+    transition: fill 0.2s ease-in-out;
+}
+
+.like-button.clicked svg {
+    fill: #1db954;
+} */
+
+.like-button {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    height: 50px;
+    width: 50px;
+}
+
+.like-button.clicked svg path {
+    fill: #09ec58;
+    stroke: none;
+    stroke-width: 3px;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: fill 0.5s linear forwards;
+}
+
+@keyframes fill {
+    from {
+        stroke-dashoffset: 1000;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
 }
