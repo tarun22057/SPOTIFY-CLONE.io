@@ -501,7 +501,6 @@ svg {
 
 .play-bar-left {
     display: flex;
-    /* gap: 0.3em; */
 }
 
 .play-bar-middle {
@@ -568,4 +567,72 @@ svg {
     margin-top: 0.5em;
     font-size: 10px;
     color: #b3b3b3;
+}
+
+.play-bar-middle {
+    display: grid;
+}
+
+#play-pause-button {
+    position: relative;
+    background-color: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    transition: transform 0.2s ease-in-out;
+}
+
+#play-pause-button i {
+    position: absolute;
+    font-size: 18px;
+    color: #333;
+    transition: opacity 0.2s ease-in-out;
+}
+
+#play-pause-button.play i.fa-play {
+    opacity: 1;
+}
+
+#play-pause-button.play i.fa-pause {
+    opacity: 0;
+}
+
+#play-pause-button.pause i.fa-play {
+    opacity: 0;
+}
+
+#play-pause-button.pause i.fa-pause {
+    opacity: 1;
+}
+
+.play-bar-middle {
+    border: 1px solid red;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.play-pause-prev-next-conatiner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+}
+
+.play-previous,
+.play-next {
+    font-size: 20px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.play-previous:hover,
+.play-next:hover {
+    color: rgba(255, 255, 255, 0.9);
 }

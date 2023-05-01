@@ -10,6 +10,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-rlGG+R0h33OypgwLZBfCN8BxnD9XOYyeb+v5TI5b+8QigwO5v5E55DKfPnARZB8Wnjj9Yv+vLSTdsN11MFy/w==" crossorigin="anonymous" referrerpolicy="no-referrer"
+    />
 </head>
 
 <body>
@@ -102,11 +105,21 @@
             </div>
         </div>
         <div class="play-bar-middle">
-            <div class="play-previous">xyz</div>
-            <div class="play-pause-btn">xyz</div>
-            <div class="play-next">xyz</div>
-            <div class="currently-playing-time">xyz</div>
+            <div class="play-pause-prev-next-conatiner">
+                <div class="play-previous"><i class="fas fa-step-backward"></i></div>
+                <div class="play-pause-btn-container">
+                    <button id="play-pause-button" class="play">
+              <i class="fas fa-play"></i>
+              <i class="fas fa-pause"></i>
+            </button>
+                </div>
+                <div class="play-next"><i class="fas fa-step-forward"></i></div>
+            </div>
+            <div class="current-track-timeline">
+                <input type="range" min="0" max="300" value="0" step="1" id="timing-bar" />
+            </div>
         </div>
+
         <div class="play-bar-right">
             <div class="lyrics">xyz</div>
             <div class="queue">xyz</div>
