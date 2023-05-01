@@ -51,6 +51,8 @@ const getAccessToken = async(clientId, clientSecret, redirectUri, scope) => {
         displayRecommendedTracks(accessToken);
 
         displaySavedEpisodes(accessToken);
+
+        // displayCurrentlyPlaying(accessToken);
     } catch (error) {
         console.log(error.message + " ---THE MAIN ACCESS TOKEN CALL");
 
@@ -63,7 +65,7 @@ getAccessToken(
     clientId,
     clientSecret,
     redirectUri,
-    "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played user-read-playback-state user-modify-playback-state streaming"
+    "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played user-read-playback-state user-modify-playback-state streaming user-read-currently-playing user-library-modify"
 );
 
 const search = async(selectedOption, query, accessToken) => {
@@ -94,6 +96,7 @@ const search = async(selectedOption, query, accessToken) => {
 
 const select = document.querySelector("#select-options");
 const searchBar = document.querySelector(".search-bar");
+const likeButton = document.querySelector(".like-button");
 
 searchBar.addEventListener("input", async function() {
     const selectedOption = "track";
@@ -160,15 +163,20 @@ searchBar.addEventListener("input", async function() {
                 if (num % 2 === 0) {
                     result.classList.add("track-on-select");
                     await onSpotifyWebPlaybackSDKReady(selectedTrackUri);
+                    const isTrackInLibrary = await ifTrackAlreadyLiked(accessToken);
+
+                    if (isTrackInLibrary) {
+                        likeButton.classList.add("clicked");
+                    }
                     num++;
 
                     //for displaying the currently playing song in the playbar write a function and pass paramteres from here for eg : currently()
                 } else {
                     await pauseTrack(accessToken);
                     result.classList.remove("track-on-select");
+
                     num++;
                 }
-                // apply the even odd thing for playing and pausing a track when num is 0(even) call playtack and if number is odd call pauseTrack keep incrementing the number
             });
 
             resultsContainer.appendChild(result);
@@ -213,6 +221,13 @@ const onSpotifyWebPlaybackSDKReady = async(trackUri) => {
             callback(accessToken);
         },
         volume: 0.5,
+    });
+    player.addListener("player_state_changed", (state) => {
+        // console.log(state);
+        if (state && state.paused === false) {
+            // The player is currently playing a track
+            displayCurrentlyPlaying(accessToken);
+        }
     });
 
     // Add event listeners to the player
@@ -510,14 +525,6 @@ const displayTopArtists = async(accessToken) => {
         topArtistLink.classList.add("top-artist-link");
         topArtistDisplay.appendChild(topArtistLink);
 
-        // const topArtistFolllowers = document.createElement("p");
-        // topArtistFolllowers.textContent =
-        //     "FOLLOWERS : " + response[i].followers.total;
-        // topArtistFolllowers.classList.add("top-artist-followers");
-        // topArtistDisplay.appendChild(topArtistFolllowers);
-
-        //when you click you should go to artits profile
-
         topArtistsDiv.appendChild(topArtistDisplay);
     }
 };
@@ -771,8 +778,131 @@ savedEp.addEventListener("click", (event) => {
     }, 10000);
 });
 
-const likeButton = document.querySelector(".like-button");
+const getCurrentlyPlaying = async(accessToken) => {
+    const config = {
+        headers: { Authorization: `Bearer ${accessToken}` },
+    };
 
+    try {
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/player/currently-playing",
+            config
+        );
+        // console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const playbarCurrentSong = document.querySelector(".current-song");
+window.addEventListener("load", async() => {
+    // to see if any track is playing on loading the window
+    try {
+        await displayCurrentlyPlaying(accessToken);
+    } catch (error) {
+        console.error(error);
+        playbarCurrentSong.innerHTML = "Unable to display currently playing song";
+    }
+});
+
+const displayCurrentlyPlaying = async(accessToken) => {
+    const currentTrack = await getCurrentlyPlaying(accessToken);
+
+    if (!currentTrack) {
+        // No track is currently playing
+        playbarCurrentSong.innerHTML = "No track currently playing";
+        playbarCurrentSong.classList.add("current-song-info");
+        return;
+    }
+    const songName = currentTrack.item.name;
+    const artistNames = currentTrack.item.artists.map((artist) => artist.name);
+    const albumArtwork = currentTrack.item.album.images[0].url;
+
+    // Create elements
+    const currentSongInfo = document.createElement("div");
+    currentSongInfo.classList.add("current-song-info");
+
+    const albumArtworkImg = document.createElement("img");
+    albumArtworkImg.src = albumArtwork;
+    albumArtworkImg.alt = "Album Artwork";
+
+    const songDetailsDiv = document.createElement("div");
+    songDetailsDiv.classList.add("song-details");
+
+    const songNameHeading = document.createElement("h3");
+    songNameHeading.textContent = songName;
+
+    const artistNamesParagraph = document.createElement("p");
+    artistNamesParagraph.textContent = artistNames.join(", ");
+
+    // Append elements
+    songDetailsDiv.appendChild(songNameHeading);
+    songDetailsDiv.appendChild(artistNamesParagraph);
+
+    currentSongInfo.appendChild(albumArtworkImg);
+    currentSongInfo.appendChild(songDetailsDiv);
+
+    playbarCurrentSong.innerHTML = "";
+    playbarCurrentSong.appendChild(currentSongInfo);
+};
 likeButton.addEventListener("click", () => {
     likeButton.classList.toggle("clicked");
+    toggleTrackInLibrary(accessToken);
 });
+
+const ifTrackAlreadyLiked = async(accessToken) => {
+    const res = await getCurrentlyPlaying(accessToken);
+    const trackUri = res.item.id;
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+    };
+
+    // Check if the track is already in the user's library
+    const checkResponse = await axios.get(
+        `https://api.spotify.com/v1/me/tracks/contains?ids=${trackUri}`,
+        config
+    );
+    console.log(checkResponse.data[0]);
+    return checkResponse.data[0];
+};
+const toggleTrackInLibrary = async(accessToken) => {
+    const res = await getCurrentlyPlaying(accessToken);
+    const trackUri = res.item.id;
+    const config = {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+    };
+    const isTrackInLibrary = await ifTrackAlreadyLiked(accessToken);
+
+    // If the track is already in the library, remove it
+
+    if (isTrackInLibrary) {
+        try {
+            await axios.delete(
+                `https://api.spotify.com/v1/me/tracks?ids=${trackUri}`,
+                config
+            );
+        } catch (err) {
+            console.log("CANT UNLIKE : " + err.message);
+        }
+    }
+    // If the track is not in the library, add it
+    else {
+        const data = {
+            ids: [trackUri],
+        };
+
+        try {
+            await axios.put("https://api.spotify.com/v1/me/tracks", data, config);
+        } catch (err) {
+            console.log("CANT LIKE : " + err.message);
+        }
+    }
+};
