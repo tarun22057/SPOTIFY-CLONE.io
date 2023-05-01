@@ -100,7 +100,7 @@ searchBar.addEventListener("input", async function() {
 
     try {
         const searchResults = await search(selectedOption, query, accessToken);
-        console.log(searchResults);
+        // console.log(searchResults);
 
         const resultsContainer = document.querySelector(".results-container");
 
@@ -150,29 +150,19 @@ searchBar.addEventListener("input", async function() {
             songTime.classList.add("searched-song-time");
 
             // Add an event listener to set the selected track URI when the track is clicked
-            let num = 0;
+
             result.addEventListener("click", async() => {
                 selectedTrackUri = searchResults[i].uri;
 
                 console.log("SELECTED TRACK : " + selectedTrackUri);
 
-                if (num % 2 === 0) {
-                    result.classList.add("track-on-select");
-                    await onSpotifyWebPlaybackSDKReady(selectedTrackUri);
-                    const isTrackInLibrary = await ifTrackAlreadyLiked(accessToken);
+                result.classList.add("track-on-select");
+                await onSpotifyWebPlaybackSDKReady(selectedTrackUri);
+                // const isTrackInLibrary = await ifTrackAlreadyLiked(accessToken);
 
-                    if (isTrackInLibrary) {
-                        likeButton.classList.add("clicked");
-                    }
-                    num++;
-
-                    //for displaying the currently playing song in the playbar write a function and pass paramteres from here for eg : currently()
-                } else {
-                    await pauseTrack(accessToken);
-                    result.classList.remove("track-on-select");
-
-                    num++;
-                }
+                // if (isTrackInLibrary) {
+                //     likeButton.classList.add("clicked");
+                // }
             });
 
             resultsContainer.appendChild(result);
@@ -218,47 +208,102 @@ const onSpotifyWebPlaybackSDKReady = async(trackUri) => {
         },
         volume: 0.5,
     });
+
+    let currentTrackUri = trackUri; // Store the current track URI
+
     player.addListener("player_state_changed", (state) => {
-        // console.log(state);
-        if (state && state.paused === false) {
-            // The player is currently playing a track
+        if (state) {
             displayCurrentlyPlaying(accessToken);
+            currentTrackUri = state.track_window.current_track.uri;
+            updatePlayPauseButton(player, playPauseButton);
+
+            const duration = state.duration / 1000; // convert milliseconds to seconds
+            const position = state.position / 1000; // convert milliseconds to seconds
+            const timingBar = document.getElementById("timing-bar");
+            timingBar.max = duration;
+            timingBar.value = position;
         }
     });
+
+    const timingBar = document.getElementById("timing-bar");
+
+    timingBar.addEventListener("input", () => {
+        const newPosition = timingBar.value * 1000; // convert seconds to milliseconds
+        player.seek(newPosition);
+    });
+
+    const playPauseButton = document.getElementById("play-pause-button");
+
+    const onPlayPauseButtonClick = () => {
+        player.getCurrentState().then((state) => {
+            if (!state) {
+                console.error("Player state not available");
+                return;
+            }
+
+            if (state.paused) {
+                player.resume();
+            } else {
+                player.pause();
+            }
+        });
+    };
+
+    // Add click event listener to the play/pause button
+    playPauseButton.addEventListener("click", onPlayPauseButtonClick);
 
     // Add event listeners to the player
     player.addListener("ready", ({ device_id }) => {
         console.log("Device ID:", device_id);
-        playTrack(trackUri, accessToken, device_id); // Start playing the track
+        // Start playing the track
+        playTrack(trackUri, accessToken, device_id);
     });
 
     // Connect to the player
     player.connect();
-};
 
-const playTrack = async(trackUri, accessToken, deviceId) => {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-        },
+    // Function to update the play/pause button
+    const updatePlayPauseButton = (player, playPauseButton) => {
+        player.getCurrentState().then((state) => {
+            if (!state) {
+                console.error("Player state not available");
+                return;
+            }
+
+            if (state.paused) {
+                playPauseButton.classList.remove("pause");
+                playPauseButton.classList.add("play");
+            } else {
+                playPauseButton.classList.remove("play");
+                playPauseButton.classList.add("pause");
+            }
+        });
     };
 
-    const data = {
-        uris: [trackUri],
-    };
+    // Function to play a track
+    const playTrack = async(trackUri, accessToken, deviceId) => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+            },
+        };
 
-    try {
-        await axios.put(
-            `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
-            data,
-            config
-        );
-        // console.log("Track played successfully");
-        player.play(); // Start playing the track on the Web Playback SDK player
-    } catch (err) {
-        console.log("Error playing track: ", err.message);
-    }
+        const data = {
+            uris: [trackUri],
+        };
+
+        try {
+            await axios.put(
+                `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+                data,
+                config
+            );
+            console.log("Track played successfully");
+        } catch (err) {
+            console.log("Error playing track: ", err.message);
+        }
+    };
 };
 
 const pauseTrack = async(accessToken) => {
@@ -280,25 +325,6 @@ const pauseTrack = async(accessToken) => {
         player.pause();
     } catch (err) {
         console.log("Error pausing track: ", err.message);
-    }
-};
-const resumeTrack = async(accessToken) => {
-    const device_id = await getDeviceId(accessToken);
-
-    try {
-        await axios.put(
-            `https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {}, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-
-        // Optional: You may want to update your player state after resuming the track
-        player.resume();
-    } catch (err) {
-        console.log("Error resuming track: ", err.message);
     }
 };
 
