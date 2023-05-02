@@ -203,6 +203,9 @@ const getDeviceId = async(accessToken) => {
     }
 };
 
+const timingBar = document.getElementById("timing-bar");
+const startTime = document.getElementById("start-time");
+const endTime = document.getElementById("end-time");
 const onSpotifyWebPlaybackSDKReady = async(trackUri) => {
     const player = new Spotify.Player({
         name: "My Web Playback SDK Player",
@@ -220,20 +223,10 @@ const onSpotifyWebPlaybackSDKReady = async(trackUri) => {
             displayCurrentlyPlaying(accessToken);
             currentTrackUri = state.track_window.current_track.uri;
             updatePlayPauseButton(player, playPauseButton);
-
-            const duration = state.duration / 1000; // convert milliseconds to seconds
-            const position = state.position / 1000; // convert milliseconds to seconds
-            const timingBar = document.getElementById("timing-bar");
-            timingBar.max = duration;
-            timingBar.value = position;
+            updateTimingBar(player, timingBar);
+            updateStartTime(state, startTime);
+            updateEndTime(state, endTime);
         }
-    });
-
-    const timingBar = document.getElementById("timing-bar");
-
-    timingBar.addEventListener("input", () => {
-        const newPosition = timingBar.value * 1000; // convert seconds to milliseconds
-        player.seek(newPosition);
     });
 
     const playPauseButton = document.getElementById("play-pause-button");
@@ -283,31 +276,71 @@ const onSpotifyWebPlaybackSDKReady = async(trackUri) => {
             }
         });
     };
-
-    // Function to play a track
-    const playTrack = async(trackUri, accessToken, deviceId) => {
-        const config = {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-            },
-        };
-
-        const data = {
-            uris: [trackUri],
-        };
-
-        try {
-            await axios.put(
-                `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
-                data,
-                config
-            );
-            console.log("Track played successfully");
-        } catch (err) {
-            console.log("Error playing track: ", err.message);
+};
+const updateTimingBar = (player, timingBar) => {
+    player.getCurrentState().then((state) => {
+        if (!state) {
+            console.error("Player state not available");
+            return;
         }
+
+        const duration = state.duration / 1000; // convert milliseconds to seconds
+        const position = state.position / 1000; // convert milliseconds to seconds
+
+        timingBar.max = duration;
+        timingBar.value = position;
+
+        // Calculate the percentage of the track completed
+        const percentComplete = (position / duration) * 100;
+
+        // Set the background color of the progress bar
+        timingBar.style.background = `linear-gradient(to right, #1db954 ${percentComplete}%, #999 ${percentComplete}%)`;
+
+        setTimeout(() => {
+            updateTimingBar(player, timingBar);
+            updateStartTime(state, startTime);
+        }, 1000); // update the timing bar every second
+    });
+};
+const updateStartTime = (state, startTime) => {
+    const startTimeString = formatTime(state.position);
+    startTime.innerText = startTimeString;
+};
+
+const updateEndTime = (state, endTime) => {
+    const endTimeString = formatTime(state.duration);
+    endTime.innerText = endTimeString;
+};
+
+const formatTime = (milliseconds) => {
+    const totalSeconds = Math.round(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
+const playTrack = async(trackUri, accessToken, deviceId) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
     };
+
+    const data = {
+        uris: [trackUri],
+    };
+
+    try {
+        await axios.put(
+            `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+            data,
+            config
+        );
+        console.log("Track played successfully");
+    } catch (err) {
+        console.log("Error playing track: ", err.message);
+    }
 };
 
 const pauseTrack = async(accessToken) => {
@@ -878,6 +911,7 @@ likeButton.addEventListener("click", () => {
 });
 
 const ifTrackAlreadyLiked = async(accessToken) => {
+    // retruns true or false whether the current playing song is already liked or not
     const res = await getCurrentlyPlaying(accessToken);
     const trackUri = res.item.id;
 
@@ -910,6 +944,7 @@ const toggleTrackInLibrary = async(accessToken) => {
     // If the track is already in the library, remove it
 
     if (isTrackInLibrary) {
+        // likeButton.classList.add("clicked");
         try {
             await axios.delete(
                 `https://api.spotify.com/v1/me/tracks?ids=${trackUri}`,
@@ -921,6 +956,7 @@ const toggleTrackInLibrary = async(accessToken) => {
     }
     // If the track is not in the library, add it
     else {
+        // likeButtons.classList.remove("clicked");
         const data = {
             ids: [trackUri],
         };
