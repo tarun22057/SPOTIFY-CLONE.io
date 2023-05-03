@@ -927,7 +927,6 @@ const toggleTrackInLibrary = async(accessToken, trackUri) => {
         },
     };
     const isTrackInLibrary = await ifTrackAlreadyLiked(accessToken, trackId);
-    // const likeButton = document.getElementById("like-button");
 
     const removeTrackFromLibrary = async() => {
         try {
@@ -966,3 +965,45 @@ const toggleTrackInLibrary = async(accessToken, trackUri) => {
         likeButton.addEventListener("click", addTrackToLibrary);
     }
 };
+
+// const volumeBar = document.querySelector("#volume-bar");
+// const audio = document.querySelector("#audio");
+
+// volumeBar.addEventListener("input", () => {
+//     const volume = volumeBar.value;
+//     audio.volume = volume / 100;
+
+//     const percent =
+//         ((volumeBar.value - volumeBar.min) / (volumeBar.max - volumeBar.min)) * 100;
+//     volumeBar.style.background = `linear-gradient(90deg, #00ff00 ${percent}%, #d3d3d3 ${percent}%)`;
+// });
+
+// volumeBar.addEventListener("change", () => {
+//     const volume = volumeBar.value;
+//     audio.volume = volume / 100;
+// });
+const next = document.querySelector(".play-next");
+next.addEventListener("click", () => {
+    const playNext = async(accessToken) => {
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            };
+
+            // Call the Spotify API to skip to the next track
+            const response = await axios.post(
+                "https://api.spotify.com/v1/me/player/next",
+                null,
+                config
+            );
+
+            console.log(response.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    // Call the playNext function with the access token
+    playNext(accessToken);
+});
