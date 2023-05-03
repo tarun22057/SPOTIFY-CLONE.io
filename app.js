@@ -1,12 +1,8 @@
 const clientId = "94593996f06140038693984df35d34a6"; //"8facece69f694f1597ac5242d3e2b5d6";
 const redirectUri = "http://127.0.0.1:5500/index.html";
-// 8facece69f694f1597ac5242d3e2b5d6:36b49b5ce75642e2ba8901454852a3cf
-// did a ghetto style oauth for now will implement proper authentication later
-//https://accounts.spotify.com/authorize?client_id=8facece69f694f1597ac5242d3e2b5d6&response_type=code&redirect_uri=http://127.0.0.1:5500/index.html&scope=user-read-private%20user-read-email%20user-library-read%20user-library-modify%20playlist-read-private%20playlist-modify-public%20playlist-modify-private%20user-top-read%20user-read-recently-played%20user-follow-read%20user-follow-modify%20user-read-playback-state%20user-read-currently-playing%20user-modify-playback-state%20user-read-playback-position%20user-read-private%20user-read-email%20playlist-read-private
 
 // Store the access token in a variable
 let accessToken = "";
-// let refreshToken = "";
 
     const base64AuthString = btoa(authString); // we need a base64 string btoa() turns it into base64
 
@@ -33,7 +29,6 @@ let accessToken = "";
         );
 
         accessToken = response.data.access_token; // Store the access token in the variable
-        //refreshToken = response.data.refresh_token; //store the response token in the variable
 
         displayPlaylistNames(accessToken);
 
@@ -83,7 +78,7 @@ const search = async(selectedOption, query, accessToken) => {
             "https://api.spotify.com/v1/search",
             configSearches
         );
-        console.log(response);
+        // console.log(response);
         return response.data.tracks.items;
     } catch (err) {
         console.log("couldn't find what you were looking for");
@@ -107,6 +102,8 @@ searchBar.addEventListener("input", async function() {
         resultsContainer.innerHTML = "";
 
         let selectedTrackUri = "";
+
+        let previousSelectedTrack = null;
 
         for (let i = 0; i < 20; i++) {
             const result = document.createElement("div");
@@ -152,17 +149,17 @@ searchBar.addEventListener("input", async function() {
             // Add an event listener to set the selected track URI when the track is clicked
 
             result.addEventListener("click", async() => {
+                if (previousSelectedTrack) {
+                    previousSelectedTrack.classList.remove("track-on-select");
+                }
+
                 selectedTrackUri = searchResults[i].uri;
 
-                console.log("SELECTED TRACK : " + selectedTrackUri);
-
                 result.classList.add("track-on-select");
-                await onSpotifyWebPlaybackSDKReady(selectedTrackUri);
-                // const isTrackInLibrary = await ifTrackAlreadyLiked(accessToken);
 
-                // if (isTrackInLibrary) {
-                //     likeButton.classList.add("clicked");
-                // }
+                previousSelectedTrack = result;
+
+                await onSpotifyWebPlaybackSDKReady(selectedTrackUri);
             });
 
             resultsContainer.appendChild(result);
@@ -247,9 +244,10 @@ const onSpotifyWebPlaybackSDKReady = async(trackUri) => {
 
     // Add event listeners to the player
     player.addListener("ready", ({ device_id }) => {
-        console.log("Device ID:", device_id);
+        // console.log("Device ID:", device_id);
         // Start playing the track
         playTrack(trackUri, accessToken, device_id);
+        toggleTrackInLibrary(accessToken, trackUri);
     });
 
     // Connect to the player
@@ -341,7 +339,7 @@ const playTrack = async(trackUri, accessToken, deviceId) => {
 
 const pauseTrack = async(accessToken) => {
     const device_id = await getDeviceId(accessToken);
-    console.log("DEVICE ID FROM FUNCTION  : " + device_id + " " + accessToken);
+    // console.log("DEVICE ID FROM FUNCTION  : " + device_id + " " + accessToken);
     const config = {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -843,7 +841,7 @@ const getCurrentlyPlaying = async(accessToken) => {
             "https://api.spotify.com/v1/me/player/currently-playing",
             config
         );
-        // console.log(response.data);
+        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error(error);
@@ -863,6 +861,7 @@ window.addEventListener("load", async() => {
 
 const displayCurrentlyPlaying = async(accessToken) => {
     const currentTrack = await getCurrentlyPlaying(accessToken);
+    // console.log(currenTrackId);
 
     if (!currentTrack) {
         // No track is currently playing
@@ -901,16 +900,8 @@ const displayCurrentlyPlaying = async(accessToken) => {
     playbarCurrentSong.innerHTML = "";
     playbarCurrentSong.appendChild(currentSongInfo);
 };
-likeButton.addEventListener("click", () => {
-    likeButton.classList.toggle("clicked");
-    toggleTrackInLibrary(accessToken);
-});
 
-const ifTrackAlreadyLiked = async(accessToken) => {
-    // retruns true or false whether the current playing song is already liked or not
-    const res = await getCurrentlyPlaying(accessToken);
-    const trackUri = res.item.id;
-
+const ifTrackAlreadyLiked = async(accessToken, trackId) => {
     const config = {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -920,47 +911,58 @@ const ifTrackAlreadyLiked = async(accessToken) => {
 
     // Check if the track is already in the user's library
     const checkResponse = await axios.get(
-        `https://api.spotify.com/v1/me/tracks/contains?ids=${trackUri}`,
+        `https://api.spotify.com/v1/me/tracks/contains?ids=${trackId}`,
         config
     );
     console.log(checkResponse.data[0]);
     return checkResponse.data[0];
 };
-const toggleTrackInLibrary = async(accessToken) => {
-    const res = await getCurrentlyPlaying(accessToken);
-    const trackUri = res.item.id;
+
+const toggleTrackInLibrary = async(accessToken, trackUri) => {
+    const trackId = trackUri.split(":")[2];
     const config = {
         headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
         },
     };
-    const isTrackInLibrary = await ifTrackAlreadyLiked(accessToken);
+    const isTrackInLibrary = await ifTrackAlreadyLiked(accessToken, trackId);
+    // const likeButton = document.getElementById("like-button");
 
-    // If the track is already in the library, remove it
-
-    if (isTrackInLibrary) {
-        // likeButton.classList.add("clicked");
+    const removeTrackFromLibrary = async() => {
         try {
             await axios.delete(
-                `https://api.spotify.com/v1/me/tracks?ids=${trackUri}`,
+                `https://api.spotify.com/v1/me/tracks?ids=${trackId}`,
                 config
             );
+            likeButton.classList.remove("clicked");
+            likeButton.addEventListener("click", addTrackToLibrary);
+            likeButton.removeEventListener("click", removeTrackFromLibrary);
         } catch (err) {
             console.log("CANT UNLIKE : " + err.message);
         }
-    }
-    // If the track is not in the library, add it
-    else {
-        // likeButtons.classList.remove("clicked");
-        const data = {
-            ids: [trackUri],
-        };
+    };
 
+    const addTrackToLibrary = async() => {
+        const data = {
+            ids: [trackId],
+        };
         try {
             await axios.put("https://api.spotify.com/v1/me/tracks", data, config);
+            likeButton.classList.add("clicked");
+            likeButton.addEventListener("click", removeTrackFromLibrary);
+            likeButton.removeEventListener("click", addTrackToLibrary);
         } catch (err) {
             console.log("CANT LIKE : " + err.message);
         }
+    };
+
+    // add initial click event listener based on whether the track is already in the library
+    if (isTrackInLibrary) {
+        likeButton.classList.add("clicked");
+        likeButton.addEventListener("click", removeTrackFromLibrary);
+    } else {
+        likeButton.classList.remove("clicked");
+        likeButton.addEventListener("click", addTrackToLibrary);
     }
 };
