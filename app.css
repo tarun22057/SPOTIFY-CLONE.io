@@ -163,7 +163,8 @@ body {
     height: 100%;
 }
 
-.right-side-main {
+.right-side-main,
+.track-element {
     background-color: #121212;
     position: relative;
     margin-left: 15%;
@@ -188,6 +189,15 @@ body {
     background-color: white;
 }
 
+.search-bar-container {
+    border: 1px solid red;
+    /* position: fixed;
+     top: 0;
+    right: 0;
+    left: 0; 
+    z-index: 10001; */
+}
+
 .active {
     border: 4px solid #09ec58;
 }
@@ -200,10 +210,11 @@ svg {
     width: 20px;
 }
 
-.result-div {
+.result-div,
+.track-element {
     display: grid;
     align-items: center;
-    grid-template-columns: 1em 5em 45em 30em 10em;
+    grid-template-columns: 1em 5em 40em 30em 10em 2em;
     gap: 1em;
     padding: 0.5em 0.75em;
 }
@@ -218,7 +229,7 @@ svg {
 .headings {
     display: grid;
     align-items: center;
-    grid-template-columns: 1em 5em 45em 30em 10em;
+    grid-template-columns: 1em 5em 40em 30em 10em 2em;
     padding: 1em 0.75em;
     gap: 1em;
     border-bottom: 1px solid white;
@@ -256,10 +267,36 @@ svg {
     text-decoration: underline;
 }
 
+.add-to-queue {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: inline-block;
+    width: 3em;
+    height: 3em;
+}
 
-/* .searched-song-album {
-    border: 1px solid red;
-} */
+.add-to-queue:hover {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.add-to-queue:hover::after {
+    content: "ADD TO QUEUE";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 8px;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 9.5px;
+    opacity: 0.8;
+    white-space: nowrap;
+    letter-spacing: 0.1em;
+}
 
 .searched-song-time {
     /* border: 1px solid red; */
@@ -667,18 +704,18 @@ svg {
     border-radius: 5px;
 }
 
-.lyrics {
+.queue {
     position: relative;
     display: inline-block;
 }
 
-.lyrics img {
+.queue img {
     width: 20px;
     height: 20px;
 }
 
-.lyrics:hover::after {
-    content: "LYRICS";
+.queue:hover::after {
+    content: "YOUR QUEUE";
     position: absolute;
     bottom: 100%;
     left: 50%;
@@ -718,4 +755,38 @@ svg {
     height: 8px;
     border-radius: 50%;
     background-color: #00cc00;
+}
+
+#notification {
+    display: none;
+    position: absolute;
+    top: 80%;
+    left: 39%;
+    right: 0;
+    height: 50px;
+    background-color: #1db954;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 50px;
+    width: 20%;
+}
+
+.queue-element {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    z-index: 999;
+    overflow-y: scroll;
+}
+
+.close-button {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 10000;
 }
