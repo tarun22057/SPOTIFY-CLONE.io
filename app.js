@@ -146,6 +146,12 @@ searchBar.addEventListener("input", async function() {
             result.appendChild(songTime);
             songTime.classList.add("searched-song-time");
 
+            const addToQueueButton = document.createElement("div");
+            addToQueueButton.textContent = "---";
+            // addToQueueButton.title = "Add to Queue";
+            result.appendChild(addToQueueButton);
+            addToQueueButton.classList.add("add-to-queue");
+
             // Add an event listener to set the selected track URI when the track is clicked
 
             result.addEventListener("click", async() => {
@@ -161,7 +167,11 @@ searchBar.addEventListener("input", async function() {
 
                 await onSpotifyWebPlaybackSDKReady(selectedTrackUri);
             });
+            addToQueueButton.addEventListener("click", async(event) => {
+                event.stopPropagation(); // doesnt let the result event listner to execute
 
+                await addToQueue(accessToken, searchResults[i].uri);
+            });
             resultsContainer.appendChild(result);
         }
     } catch (err) {
@@ -188,10 +198,10 @@ const getDeviceId = async(accessToken) => {
             config
         );
 
-        // console.log("DEVICE ID FROM FUNCTION  : " + response.data.device.id);
+        console.log("DEVICE ID FROM FUNCTION  : " + response.data.device.id);
         return response.data.device.id;
     } catch (err) {
-        console.log("Error getting active device ID: ", err.message);
+        console.log("Error getting active device ID: " + err.message);
         return null;
     }
 };
@@ -841,7 +851,7 @@ const getCurrentlyPlaying = async(accessToken) => {
             "https://api.spotify.com/v1/me/player/currently-playing",
             config
         );
-        console.log(response.data);
+        // console.log(response.data);
         return response.data;
     } catch (error) {
         console.error(error);
@@ -914,7 +924,7 @@ const ifTrackAlreadyLiked = async(accessToken, trackId) => {
         `https://api.spotify.com/v1/me/tracks/contains?ids=${trackId}`,
         config
     );
-    console.log(checkResponse.data[0]);
+    // console.log(checkResponse.data[0]);
     return checkResponse.data[0];
 };
 
@@ -999,7 +1009,7 @@ next.addEventListener("click", () => {
                 config
             );
 
-            console.log(response.data);
+            // console.log(response.data);
         } catch (err) {
             console.error(err);
         }
@@ -1007,3 +1017,106 @@ next.addEventListener("click", () => {
     // Call the playNext function with the access token
     playNext(accessToken);
 });
+
+const addToQueue = async(accessToken, uri) => {
+    const deviceID = await getDeviceId(accessToken);
+
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+            },
+        };
+
+        const response = await axios.post(
+            `https://api.spotify.com/v1/me/player/queue?uri=${encodeURIComponent(
+        uri
+      )}&device_id=${deviceID}`,
+            null,
+            config
+        );
+        // Show notification
+        const notification = document.getElementById("notification");
+        notification.textContent = "Track added to queue";
+        notification.style.display = "block";
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 2000);
+
+        console.log("ADDED TO QUEUE");
+        console.log(response.data); // Log the response from the Spotify API
+    } catch (error) {
+        console.error(error.response.data);
+    }
+};
+const rightSide = document.querySelector(".right-side-main");
+const queue = document.querySelector(".queue");
+queue.addEventListener("click", async() => {
+    const response = await getUsersQueue(accessToken);
+    // document.body.removeChild(rightSide);
+    // create a parent element
+    const queueElement = document.createElement("div");
+    queueElement.classList.add("queue-element");
+
+    // loop through the tracks and add each track to the queue element
+    for (let i = 0; i < response.queue.length; i++) {
+        const trackElement = document.createElement("div");
+        trackElement.classList.add("track-element");
+        trackElement.innerHTML = `
+     <div class="result-div">
+  <div class="result-number">${i + 1}.</div>
+  <img src="${
+    response.queue[i].album.images[0].url
+  }" class="searched-img" alt="${response.queue[i].name}">
+  <div class="searched-song-name">${response.queue[i].name}<a href="${
+      response.queue[i].artists[0].external_urls.spotify
+    }" class="searched-song-artist">${
+      response.queue[i].artists[0].name
+    }</a></div>
+  <a href="${
+    response.queue[i].album.external_urls.spotify
+  }" class="searched-song-album">${response.queue[i].album.name}</a>
+  <div class="searched-song-time">${millisToMinutesAndSeconds(
+    response.queue[i].duration_ms
+  )}</div>
+</div>
+
+    `;
+        queueElement.appendChild(trackElement);
+    }
+
+    // create a close button
+    const closeButton = document.createElement("button");
+    closeButton.classList.add("close-button");
+    closeButton.innerHTML = "X";
+    closeButton.addEventListener("click", () => {
+        document.body.removeChild(queueElement);
+        document.body.removeChild(crossButton);
+        // document.body.appendChild(rightSide);
+    });
+
+    // append the queue element and close button to the body
+    document.body.appendChild(queueElement);
+    document.body.appendChild(closeButton);
+});
+const getUsersQueue = async(accessToken) => {
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+
+        const response = await axios.get(
+            "https://api.spotify.com/v1/me/player/queue",
+            config
+        );
+
+        console.log(response.data);
+        return response.data;
+        // Handle the queue data here
+    } catch (error) {
+        console.error(error.response.data);
+    }
+};
