@@ -777,10 +777,11 @@ svg {
   height: 2.5em;
   width: 2.5em;
 }
-.queue-element {
+.queue-element,
+.liked-element {
   position: fixed;
   right: 0;
-  width: 84%;
+  width: 83%;
   background-color: #121212;
   z-index: 999;
   overflow-y: scroll;
@@ -796,15 +797,48 @@ svg {
   padding: 0.5em;
   border-bottom: 1px solid #fefefe;
 }
-.clicked-queue {
+.liked-header,
+.library-header {
+  color: #1db954;
+  text-align: center;
+  font-size: 4em;
+  padding: 0.5em;
+  border-bottom: 1px solid #fefefe;
+}
+.clicked-queue,
+.clicked-liked,
+.clicked-library {
   background-color: #5a5a5a;
   border-radius: 3px;
 }
-.queue-empty-msg {
+.queue-empty-msg,
+.liked-empty-message,
+.library-empty-msg {
   height: 80vh;
   font-size: 4rem;
   color: #1db954;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.liked,
+.library {
+  display: flex;
+  gap: 1em;
+}
+.liked span,
+.library span {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  color: rgb(159, 159, 159);
+  text-decoration: none;
+  font-size: 0.65rem;
+  letter-spacing: 0.1rem;
+}
+.liked span:hover,
+.library span:hover {
+  color: white;
+  transition: color 0.25s ease;
+  cursor: pointer;
 }

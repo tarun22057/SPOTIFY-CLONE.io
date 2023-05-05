@@ -60,7 +60,7 @@ getAccessToken(
   clientId,
   clientSecret,
   redirectUri,
-  "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played user-read-playback-state user-modify-playback-state streaming user-read-currently-playing user-library-modify"
+  "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played user-read-playback-state user-modify-playback-state streaming user-read-currently-playing user-library-modify playlist-modify-public playlist-modify-private"
 );
 
 const search = async (selectedOption, query, accessToken) => {
@@ -863,7 +863,7 @@ const getCurrentlyPlaying = async (accessToken) => {
     // console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error(error);
+    console.error(error.response.data);
   }
 };
 
@@ -1026,6 +1026,31 @@ next.addEventListener("click", () => {
   // Call the playNext function with the access token
   playNext(accessToken);
 });
+const previous = document.querySelector(".play-previous");
+previous.addEventListener("click", () => {
+  const playPrevious = async (accessToken) => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      // Call the Spotify API to skip to the previous track
+      const response = await axios.post(
+        "https://api.spotify.com/v1/me/player/previous",
+        null,
+        config
+      );
+
+      // console.log(response.data);
+    } catch (err) {
+      console.error(err.response.data);
+    }
+  };
+  // Call the playPrevious function with the access token
+  playPrevious(accessToken);
+});
 
 const addToQueue = async (accessToken, uri) => {
   const deviceID = await getDeviceId(accessToken);
@@ -1061,7 +1086,7 @@ const addToQueue = async (accessToken, uri) => {
 };
 const rightSide = document.querySelector(".right-side-main");
 const queue = document.querySelector(".queue");
-let queueElement, closeButton;
+let queueElement;
 
 queue.addEventListener("click", async () => {
   queue.classList.toggle("clicked-queue");
@@ -1072,7 +1097,6 @@ queue.addEventListener("click", async () => {
   } else {
     // If the queue element is not present in the DOM, create it to open the queue
     const response = await getUsersQueue(accessToken);
-
     queueElement = document.createElement("div");
     queueElement.classList.add("queue-element");
 
@@ -1081,6 +1105,7 @@ queue.addEventListener("click", async () => {
     queueHeader.innerText = "Queue";
     queueElement.insertBefore(queueHeader, queueElement.firstChild);
 
+    let previousSelectedTrack = null;
     if (response.queue.length === 0) {
       const queueEmptyMsg = document.createElement("p");
       queueEmptyMsg.innerText = "Queue is empty";
@@ -1110,6 +1135,19 @@ queue.addEventListener("click", async () => {
             )}</div>
           </div>
         `;
+        trackElement.addEventListener("click", async () => {
+          if (previousSelectedTrack) {
+            previousSelectedTrack.classList.remove("track-on-select");
+          }
+
+          selectedTrackUri = response.queue[i].uri;
+
+          trackElement.classList.add("track-on-select");
+
+          previousSelectedTrack = trackElement;
+
+          await onSpotifyWebPlaybackSDKReady(selectedTrackUri);
+        });
 
         queueElement.appendChild(trackElement);
       }
@@ -1138,4 +1176,95 @@ const getUsersQueue = async (accessToken) => {
   } catch (error) {
     console.error(error.response.data);
   }
+};
+
+const getLiked = async (accessToken) => {
+  try {
+    const response = await axios.get("https://api.spotify.com/v1/me/tracks", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      params: { limit: 50 },
+    });
+    console.log(response.data.items);
+    return response.data.items;
+  } catch (err) {
+    console.log(err.response.data);
+  }
+};
+
+const liked = document.querySelector(".liked");
+let likedElement = null;
+let likedDisplayed = false;
+
+liked.addEventListener("click", async () => {
+  likedDisplayed = !likedDisplayed;
+  liked.classList.toggle("clicked-liked");
+
+  if (likedDisplayed) {
+    const tracks = await getLiked(accessToken);
+    displayLiked(tracks);
+  } else {
+    document.body.removeChild(likedElement);
+    likedElement = null;
+  }
+});
+
+const displayLiked = (tracks) => {
+  likedElement = document.createElement("div");
+  likedElement.classList.add("liked-element");
+
+  const likedHeader = document.createElement("h1");
+  likedHeader.classList.add("liked-header");
+  likedHeader.innerText = "Liked Songs";
+  likedElement.insertBefore(likedHeader, likedElement.firstChild);
+
+  let previousSelectedTrack = null;
+  if (tracks.length === 0) {
+    const messageElement = document.createElement("p");
+    messageElement.innerText = "You have no liked songs.";
+    likedElement.appendChild(messageElement);
+  } else {
+    for (let i = 0; i < tracks.length; i++) {
+      const trackElement = document.createElement("div");
+      trackElement.classList.add("track-element");
+
+      trackElement.innerHTML = `
+        <div class="result-div">
+          <div class="result-number">${i + 1}.</div>
+          <img src="${
+            tracks[i].track.album.images[0].url
+          }" class="searched-img" alt="${tracks[i].track.name}">
+          <div class="searched-song-name">${tracks[i].track.name}<a href="${
+        tracks[i].track.artists[0].external_urls.spotify
+      }" class="searched-song-artist">${
+        tracks[i].track.artists[0].name
+      }</a></div>
+          <a href="${
+            tracks[i].track.album.external_urls.spotify
+          }" class="searched-song-album">${tracks[i].track.album.name}</a>
+          <div class="searched-song-time">${millisToMinutesAndSeconds(
+            tracks[i].track.duration_ms
+          )}</div>
+        </div>
+      `;
+
+      trackElement.addEventListener("click", async () => {
+        if (previousSelectedTrack) {
+          previousSelectedTrack.classList.remove("track-on-select");
+        }
+
+        selectedTrackUri = tracks[i].track.uri;
+
+        trackElement.classList.add("track-on-select");
+
+        previousSelectedTrack = trackElement;
+
+        await onSpotifyWebPlaybackSDKReady(selectedTrackUri);
+      });
+      likedElement.appendChild(trackElement);
+    }
+  }
+
+  document.body.appendChild(likedElement);
 };
