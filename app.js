@@ -1,5 +1,5 @@
-const clientId = "94593996f06140038693984df35d34a6"; //"8facece69f694f1597ac5242d3e2b5d6";
-const redirectUri = "http://127.0.0.1:5500/index.html";
+const clientId = ""; //"YOUR CLIENT ID";
+const redirectUri = "http://127.0.0.1:5500/index.html"; //"YOUR REDIRECT URI"
 
 // Store the access token in a variable
 let accessToken = "";
@@ -987,22 +987,6 @@ const toggleTrackInLibrary = async (accessToken, trackUri) => {
   }
 };
 
-// const volumeBar = document.querySelector("#volume-bar");
-// const audio = document.querySelector("#audio");
-
-// volumeBar.addEventListener("input", () => {
-//     const volume = volumeBar.value;
-//     audio.volume = volume / 100;
-
-//     const percent =
-//         ((volumeBar.value - volumeBar.min) / (volumeBar.max - volumeBar.min)) * 100;
-//     volumeBar.style.background = `linear-gradient(90deg, #00ff00 ${percent}%, #d3d3d3 ${percent}%)`;
-// });
-
-// volumeBar.addEventListener("change", () => {
-//     const volume = volumeBar.value;
-//     audio.volume = volume / 100;
-// });
 const next = document.querySelector(".play-next");
 next.addEventListener("click", () => {
   const playNext = async (accessToken) => {
@@ -1081,7 +1065,7 @@ const addToQueue = async (accessToken, uri) => {
     }, 2000);
 
     console.log("ADDED TO QUEUE");
-    console.log(response.data); // Log the response from the Spotify API
+    // console.log(response.data); // Log the response from the Spotify API
   } catch (error) {
     console.error(error.response.data);
   }
@@ -1308,4 +1292,3 @@ hamburger.addEventListener("click", function () {
 
   overLay.classList.toggle("activeOverLay");
 });
-// Get the artist name element
