@@ -10,9 +10,9 @@
     <button class="login-button">Login with Spotify</button>
 
     <script>
-      const clientId = "94593996f06140038693984df35d34a6"; //"8facece69f694f1597ac5242d3e2b5d6";
-      const clientSecret = "97e64b3063884f98b128659c632c5df9"; //"89851d686eff40b6a9a6ba407033c1ad";
-      const redirectUri = "http://127.0.0.1:5500/index.html";
+      const clientId = ""; //"YOUR CLIENT ID";
+      const clientSecret = ""; //"YOUR CLIENT SECRET";
+      const redirectUri = "http://127.0.0.1:5500/index.html"; //"YOUR REDIRECT URI"
       const getAuthCode = async (clientId, redirectUri, scope) => {
         const url = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(
           redirectUri
