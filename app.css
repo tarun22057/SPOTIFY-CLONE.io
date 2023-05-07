@@ -203,11 +203,21 @@ svg {
 }
 
 .result-div {
-  display: grid;
+  display: flex;
   align-items: center;
-  grid-template-columns: 1em 5em 40em 30em 10em 2em;
   gap: 1em;
   padding: 0.5em 0.75em;
+}
+.searched-name-album-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+.sno-img-name-album-container {
+  display: flex;
+  align-items: center;
+  width: 35%;
+  gap: 1em;
 }
 .results-container,
 .track-element {
@@ -220,7 +230,7 @@ svg {
   background-color: #262626;
   border-radius: 12px;
   cursor: pointer;
-  width: 96%;
+  width: 98%;
 }
 
 .headings {
@@ -240,7 +250,6 @@ svg {
 }
 
 .searched-song-name {
-  /* border: 1px solid green; */
   display: flex;
   flex-direction: column;
   gap: 0.65em;
@@ -252,6 +261,7 @@ svg {
 }
 
 .searched-song-album {
+  width: 45%;
   font-size: 0.8rem;
   font-weight: 600;
 }
@@ -274,6 +284,7 @@ svg {
   display: inline-block;
   width: 3em;
   height: 3em;
+  width: 10%;
 }
 
 .add-to-queue:hover {
@@ -298,6 +309,7 @@ svg {
 .searched-song-time {
   /* border: 1px solid red; */
   text-align: center;
+  width: 10%;
 }
 
 .cross-button {
@@ -319,13 +331,14 @@ svg {
   left: 0;
   bottom: 0;
   z-index: 1;
-  overflow-y: hidden;
+
   display: flex;
   justify-content: center;
 }
 
 .left-conatiner {
   width: 88%;
+  height: 100%;
   /* border: 1px solid red; */
 }
 
@@ -333,6 +346,13 @@ svg {
   /* border: 1px solid red; */
   display: flex;
   align-items: center;
+  height: 50px;
+  width: 50px;
+  padding: 0.5em 0em 0em 0em;
+}
+.logo img {
+  width: 100%;
+  height: 100%;
 }
 
 .menu {
@@ -523,7 +543,7 @@ svg {
 }
 
 .play-bar {
-  z-index: 1000;
+  z-index: 10002;
   border-top: 1px solid rgba(255, 255, 255, 0.5);
   position: fixed;
   bottom: 0;
@@ -531,25 +551,30 @@ svg {
   width: 100%;
   height: 5.4rem;
   display: flex;
+  gap: 0.5em;
   background-color: #262626;
 }
 
 .play-bar-left {
+  /* border: 1px solid red; */
   display: flex;
-  width: 33.5%;
+  width: 30%;
 }
 
 .play-bar-middle {
+  /* border: 1px solid red; */
   display: flex;
-  width: 33.5%;
+  width: 50%;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 0.5em;
   padding: 1em 0em 0.3em 0em;
 }
 
 .play-bar-right {
   display: flex;
-  width: 33.5%;
+  width: 20%;
   justify-content: flex-end;
   align-items: center;
   gap: 1.5em;
@@ -559,16 +584,15 @@ svg {
 .track-on-select {
   background-color: #5a5a5a;
   border-radius: 12px;
-  width: 96%;
+  width: 98%;
   /* pointer-events: none; */
 }
 
 .like-button {
-  /* border: 1px solid red; */
   display: flex;
   align-items: center;
   background-color: transparent;
-  /* border: none; */
+
   cursor: pointer;
 }
 
@@ -673,10 +697,12 @@ svg {
 }
 
 .current-track-timeline {
+  width: 70%;
   padding: 0.5em 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 0.5em;
 }
 
 #start-time,
@@ -686,11 +712,11 @@ svg {
 
 #timing-bar {
   -webkit-appearance: none;
-  width: 89%;
+
+  width: 100%;
   height: 3px;
   background-color: #ddd;
   border-radius: 5px;
-  outline: yellow;
 }
 
 #timing-bar::-webkit-slider-thumb {
@@ -781,16 +807,15 @@ svg {
 .liked-element {
   position: fixed;
   right: 0;
-  width: 83%;
+  width: 82%;
   background-color: #121212;
   z-index: 999;
   overflow-y: scroll;
   padding: 0em 1.5em;
-  min-height: 1.5px;
+  min-height: 100%;
   max-height: calc(100% - 6em);
   overflow-y: scroll;
 }
-
 .queue-header {
   text-align: center;
   font-size: 4em;
@@ -841,4 +866,273 @@ svg {
   color: white;
   transition: color 0.25s ease;
   cursor: pointer;
+}
+.currently-playing {
+  border: 1px solid #1db954;
+}
+.hamburger {
+  display: none;
+}
+
+@media (max-width: 1046px) {
+  .hamburger {
+    display: block;
+    position: absolute;
+    top: 30px;
+    left: 12px;
+    width: 30px;
+    height: 24px;
+    cursor: pointer;
+    z-index: 10001;
+    transition: all 0.5s ease;
+  }
+
+  .hamburger span {
+    display: block;
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 3px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: all 0.25s ease-in-out;
+  }
+
+  .hamburger span:nth-child(1) {
+    top: 0;
+  }
+
+  .hamburger span:nth-child(2) {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .hamburger span:nth-child(3) {
+    bottom: 0;
+  }
+
+  .hamburger.active span:nth-child(1) {
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  .hamburger.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.active span:nth-child(3) {
+    bottom: 50%;
+    transform: translateY(50%) rotate(-45deg);
+  }
+
+  .left-side {
+    background-color: #000000;
+    min-width: 30%;
+    position: fixed;
+    top: 0;
+    left: -30%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    overflow: auto;
+    z-index: 10000;
+    height: 100%;
+    transition: all 0.5s ease;
+  }
+
+  .left-side.activeHam {
+    left: 0;
+    box-shadow: 0px 0px 10px rgba(29, 185, 84, 0.5);
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+  }
+
+  .left-side.open {
+    display: flex;
+  }
+
+  .overlay.activeOverLay {
+    display: block;
+  }
+
+  .logo {
+    margin: 0 auto;
+    height: 70px;
+    width: 70px;
+  }
+  .left-side.open {
+    display: flex;
+  }
+  .right-side-main,
+  .liked-element,
+  .queue-element {
+    width: 100%;
+  }
+  .search-bar-fa {
+    margin: 0 auto;
+    width: 50%;
+  }
+  .track-element,
+  .queue-element {
+    padding-left: 3em;
+  }
+  /* .current-song-info{
+    
+  } */
+}
+@media (max-width: 816px) {
+  /*styles for the playbar*/
+  .volume {
+    display: none;
+  }
+  .play-bar-left {
+    display: flex;
+    width: 40%;
+  }
+
+  .play-bar-middle {
+    display: flex;
+    width: 40%;
+    flex-direction: column;
+    gap: 0.5em;
+    padding: 1em 0em 0.3em 0em;
+  }
+
+  .play-bar-right {
+    display: flex;
+    width: 20%;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1.5em;
+    padding-right: 2em;
+  }
+}
+@media (max-width: 742px) {
+  .queue {
+    position: fixed;
+    top: 23px;
+    right: 12px;
+  }
+
+  /* .current-song-info {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  color: white;
+  padding: 1em;
+}
+
+.current-song-info img {
+  width: 60px;
+  height: 60px;
+  border-radius: 3px;
+}
+
+.current-song-info h3 {
+  font: 550;
+}
+
+.current-song-info p {
+  margin-top: 0.5em;
+  font-size: 10px;
+  color: #b3b3b3;
+} */
+
+  .current-song-info p {
+    min-width: 80%;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .play-bar-right {
+    display: flex;
+    justify-content: end;
+    width: 0px !important;
+  }
+  .play-bar-left {
+    width: 50% !important;
+  }
+  .play-bar-middle {
+    width: 50% !important;
+  }
+}
+
+@media (max-width: 794px) {
+  .good-evening {
+    padding: 2em 2em 2em 0em;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 1.3em;
+  }
+}
+@media (max-width: 744px) {
+  .searched-song-album {
+    display: none;
+  }
+  .result-div {
+    display: flex;
+    justify-content: space-between;
+  }
+  .sno-img-name-album-container {
+    width: 70%;
+  }
+}
+
+@media (max-width: 581px) {
+  .results-container .result-div .searched-song-time {
+    display: none !important;
+  }
+  .search-bar-fa {
+    width: 60%;
+  }
+  .left-side {
+    background-color: #000000;
+    width: 100%;
+    max-width: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    overflow: auto;
+    z-index: 10000;
+    height: 100%;
+    transition: all 0.5s ease;
+    transform: translateX(-100%);
+  }
+  .left-side.activeHam {
+    /* Add these rules */
+    transform: translateX(0%);
+  }
+}
+
+@media (max-width: 519px) {
+  .right-side-main,
+  .liked-element,
+  .queue-element {
+    padding-right: 1em;
+    width: 100%;
+  }
+  .track-on-select {
+    width: 100%;
+    border-radius: 10px;
+  }
+}
+@media (max-width: 437px) {
+  .queue-header,
+  .liked-header {
+    font-size: 2rem;
+    padding: 1em;
+  }
 }

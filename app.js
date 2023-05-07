@@ -113,27 +113,30 @@ searchBar.addEventListener("input", async function () {
       const result = document.createElement("div");
       result.classList.add("result-div");
 
+      const snoImgNameAlbumContainer = document.createElement("div");
+      snoImgNameAlbumContainer.classList.add("sno-img-name-album-container");
+      result.appendChild(snoImgNameAlbumContainer);
+
       const resultNumber = document.createElement("div");
       resultNumber.textContent = i + 1;
-      result.appendChild(resultNumber);
+      snoImgNameAlbumContainer.appendChild(resultNumber);
       resultNumber.classList.add("result-number");
 
       const resultImg = document.createElement("img");
       resultImg.src = searchResults[i].album.images[0].url;
-      result.appendChild(resultImg);
+      snoImgNameAlbumContainer.appendChild(resultImg);
       resultImg.classList.add("searched-img");
 
       const resultName = document.createElement("div");
       resultName.textContent = searchResults[i].name;
-      result.appendChild(resultName);
+      snoImgNameAlbumContainer.appendChild(resultName);
+      resultName.classList.add("searched-name-album-container");
 
       const resultArtist = document.createElement("a");
       resultArtist.textContent = searchResults[i].artists[0].name;
       resultName.appendChild(resultArtist);
       resultArtist.classList.add("searched-song-artist");
       resultArtist.href = searchResults[i].artists[0].external_urls.spotify;
-
-      resultName.classList.add("searched-song-name");
 
       const resultAlbum = document.createElement("a");
       resultAlbum.textContent = searchResults[i].album.name;
@@ -188,6 +191,7 @@ function millisToMinutesAndSeconds(millis) {
   var seconds = ((millis % 60000) / 1000).toFixed(0);
   return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 }
+
 const getDeviceId = async (accessToken) => {
   const config = {
     headers: {
@@ -516,7 +520,7 @@ const getPlaylists = async (accessToken) => {
   }
 };
 
-const playList = document.querySelector(".playlist");
+const playList = document.querySelector(".left-play-list-container");
 const rightSideHomeStuff = document.querySelector(".right-side-home-stuff");
 const rightSideMain = document.querySelector(".right-side-main");
 const goodEvening = document.querySelector(".good-evening");
@@ -918,6 +922,8 @@ const displayCurrentlyPlaying = async (accessToken) => {
 
   playbarCurrentSong.innerHTML = "";
   playbarCurrentSong.appendChild(currentSongInfo);
+
+  const artistName = document.querySelector(".current-song-info p");
 };
 
 const ifTrackAlreadyLiked = async (accessToken, trackId) => {
@@ -1089,6 +1095,8 @@ const queue = document.querySelector(".queue");
 let queueElement;
 
 queue.addEventListener("click", async () => {
+  const addedSongURIs = []; //to display a given song only once in the queue
+
   queue.classList.toggle("clicked-queue");
   if (queueElement && document.body.contains(queueElement)) {
     // If the queue element is already present in the DOM, remove it to close the queue
@@ -1101,6 +1109,7 @@ queue.addEventListener("click", async () => {
     queueElement.classList.add("queue-element");
 
     const queueHeader = document.createElement("h1");
+
     queueHeader.classList.add("queue-header");
     queueHeader.innerText = "Queue";
     queueElement.insertBefore(queueHeader, queueElement.firstChild);
@@ -1109,31 +1118,47 @@ queue.addEventListener("click", async () => {
     if (response.queue.length === 0) {
       const queueEmptyMsg = document.createElement("p");
       queueEmptyMsg.innerText = "Queue is empty";
+      queueEmptyMsg.classList.add("searched-song-artist");
       queueEmptyMsg.classList.add("queue-empty-msg");
       queueElement.appendChild(queueEmptyMsg);
     } else {
       for (let i = 0; i < response.queue.length; i++) {
+        const songURI = response.queue[i].uri;
+        if (addedSongURIs.includes(songURI)) {
+          // skip adding the song to the queue
+          continue;
+        }
+        addedSongURIs.push(songURI);
+
         const trackElement = document.createElement("div");
         trackElement.classList.add("track-element");
 
         trackElement.innerHTML = `
-          <div class="result-div">
-            <div class="result-number">${i + 1}.</div>
-            <img src="${
-              response.queue[i].album.images[0].url
-            }" class="searched-img" alt="${response.queue[i].name}">
-            <div class="searched-song-name">${response.queue[i].name}<a href="${
-          response.queue[i].artists[0].external_urls.spotify
-        }" class="searched-song-artist">${
-          response.queue[i].artists[0].name
-        }</a></div>
-            <a href="${
-              response.queue[i].album.external_urls.spotify
-            }" class="searched-song-album">${response.queue[i].album.name}</a>
-            <div class="searched-song-time">${millisToMinutesAndSeconds(
-              response.queue[i].duration_ms
-            )}</div>
-          </div>
+<div class="result-div">
+  <div class="sno-img-name-album-container">
+    <div class="result-number">${i + 1}.</div>
+    <img
+      src="${response.queue[i].album.images[0].url}"
+      class="searched-img"
+      alt="${response.queue[i].name}"
+    />
+    <div class="searched-song-name">
+      ${response.queue[i].name}<a
+        href="${response.queue[i].artists[0].external_urls.spotify}"
+        class="searched-song-artist"
+        >${response.queue[i].artists[0].name}</a
+      >
+      </div>
+      </div>
+      <a
+        href=          "${response.queue[i].album.external_urls.spotify}"
+        class="searched-song-album"
+        >${response.queue[i].album.name}</a
+      >
+    <div class="searched-song-time">
+      ${millisToMinutesAndSeconds(response.queue[i].duration_ms)}
+    </div>
+</div>
         `;
         trackElement.addEventListener("click", async () => {
           if (previousSelectedTrack) {
@@ -1231,22 +1256,31 @@ const displayLiked = (tracks) => {
 
       trackElement.innerHTML = `
         <div class="result-div">
-          <div class="result-number">${i + 1}.</div>
-          <img src="${
-            tracks[i].track.album.images[0].url
-          }" class="searched-img" alt="${tracks[i].track.name}">
-          <div class="searched-song-name">${tracks[i].track.name}<a href="${
-        tracks[i].track.artists[0].external_urls.spotify
-      }" class="searched-song-artist">${
-        tracks[i].track.artists[0].name
-      }</a></div>
-          <a href="${
-            tracks[i].track.album.external_urls.spotify
-          }" class="searched-song-album">${tracks[i].track.album.name}</a>
-          <div class="searched-song-time">${millisToMinutesAndSeconds(
-            tracks[i].track.duration_ms
-          )}</div>
-        </div>
+  <div class="sno-img-name-album-container">
+    <div class="result-number">${i + 1}.</div>
+    <img
+      src="${tracks[i].track.album.images[0].url}"
+      class="searched-img"
+      alt="${tracks[i].track.name}"
+    />
+    <div class="searched-song-name">
+      ${tracks[i].track.name}<a
+        href="${tracks[i].track.artists[0].external_urls.spotify}"
+        class="searched-song-artist"
+        >${tracks[i].track.artists[0].name}</a
+      >
+    </div>
+  </div>
+
+  <a
+    href="${tracks[i].track.album.external_urls.spotify}"
+    class="searched-song-album"
+    >${tracks[i].track.album.name}</a
+  >
+  <div class="searched-song-time">
+    ${millisToMinutesAndSeconds(tracks[i].track.duration_ms)}
+  </div>
+</div>
       `;
 
       trackElement.addEventListener("click", async () => {
@@ -1268,3 +1302,14 @@ const displayLiked = (tracks) => {
 
   document.body.appendChild(likedElement);
 };
+const overLay = document.querySelector(".overlay");
+const hamburger = document.querySelector(".hamburger");
+const leftSide = document.querySelector(".left-side");
+
+hamburger.addEventListener("click", function () {
+  hamburger.classList.toggle("activeHam");
+  leftSide.classList.toggle("activeHam");
+
+  overLay.classList.toggle("activeOverLay");
+});
+// Get the artist name element
