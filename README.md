@@ -20,7 +20,7 @@ This is a web application that lets you search for tracks, play tracks, add trac
 
 - Once you have your credentials, you can run the application by opening the index.html file in your web browser.
 
-- NOTE : The page will redirect backand froth between (login.html and index.hmtl) if you make changes or click any link
+- NOTE : The page will redirect back and forth between (login.html and index.hmtl) if you make changes or click any link
 
 # Web API
 
