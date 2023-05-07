@@ -18,7 +18,9 @@ This is a web application that lets you search for tracks, play tracks, add trac
 
 - Then You need to replace your respective CLIENT ID ,CLIENT SECRET and REDIRECT URI in login.html and app.js file.
 
--Once you have your credentials, you can run the application by opening the index.html file in your web browser.
+- Once you have your credentials, you can run the application by opening the index.html file in your web browser.
+
+- NOTE : The page will redirect back and forth between (login.html and index.hmtl) if you make changes or click any link
 
 # Web API
 
