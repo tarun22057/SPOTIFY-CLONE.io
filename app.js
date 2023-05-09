@@ -1,6 +1,6 @@
 const clientId = "94593996f06140038693984df35d34a6";
 const clientSecret = "9253b3f98d04434990dda28089c6badb";
-const redirectUri = "http://127.0.0.1:5500/index.html";
+const redirectUri = "https://spotifyclone1-one.vercel.app/index.html";
 
 // Store the access token in a variable
 let accessToken = "";
@@ -52,7 +52,7 @@ const getAccessToken = async (clientId, clientSecret, redirectUri, scope) => {
     console.log(error.message + " ---THE MAIN ACCESS TOKEN CALL");
 
     //agar iss wale area mein code ja raha hai to firse login page pr redirect krdo http://127.0.0.1:5500/login.html
-    window.location.href = "http://127.0.0.1:5500/login.html";
+    window.location.href = "https://spotifyclone1-one.vercel.app/login.html";
   }
 };
 
