@@ -1,5 +1,5 @@
-const clientId = ""; //"YOUR CLIENT ID";
-const redirectUri = "http://127.0.0.1:5500/index.html"; //"YOUR REDIRECT URI"
+const clientId = "94593996f06140038693984df35d34a6";
+const redirectUri = "http://127.0.0.1:5500/index.html";
 
 // Store the access token in a variable
 let accessToken = "";
