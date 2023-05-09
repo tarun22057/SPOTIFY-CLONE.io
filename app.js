@@ -1,6 +1,6 @@
-const clientId = "94593996f06140038693984df35d34a6";
-const clientSecret = "9253b3f98d04434990dda28089c6badb";
-const redirectUri = "https://spotifyclone1-one.vercel.app/index.html";
+const clientId = "YOUR CLIENT ID";
+const clientSecret = "YOUR CLIENT SECRET";
+const redirectUri = "YOUR REDIRECT URI";
 
 // Store the access token in a variable
 let accessToken = "";
