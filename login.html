@@ -36,9 +36,10 @@
     <button class="login-button">Login with Spotify</button>
 
     <script>
-      const clientId = "94593996f06140038693984df35d34a6";
-      const clientSecret = "9253b3f98d04434990dda28089c6badb";
-      const redirectUri = "https://spotifyclone1-one.vercel.app/index.html"; //"YOUR REDIRECT URI"
+      const clientId = ""; // your client id
+      const clientSecret = ""; //your client secret
+      const redirectUri = "http://127.0.0.1:5500/index.html"; //your redirect uri
+
       const getAuthCode = async (clientId, redirectUri, scope) => {
         const url = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(
           redirectUri

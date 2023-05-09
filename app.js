@@ -1,9 +1,12 @@
-const clientId = "94593996f06140038693984df35d34a6";
-const redirectUri = "https://spotifyclone1-one.vercel.app/index.html";
+const clientId = ""; // your client id
+const clientSecret = ""; //your client secret
+const redirectUri = "http://127.0.0.1:5500/index.html"; //your redirect uri
 
 // Store the access token in a variable
 let accessToken = "";
 
+const getAccessToken = async (clientId, clientSecret, redirectUri, scope) => {
+  const authString = `${clientId}:${clientSecret}`;
   const base64AuthString = btoa(authString); // we need a base64 string btoa() turns it into base64
 
   const config = {
@@ -49,12 +52,13 @@ let accessToken = "";
     console.log(error.message + " ---THE MAIN ACCESS TOKEN CALL");
 
     //agar iss wale area mein code ja raha hai to firse login page pr redirect krdo http://127.0.0.1:5500/login.html
-    window.location.href = "https://spotifyclone1-one.vercel.app/login.html";
+    window.location.href = "http://127.0.0.1:5500/login.html";
   }
 };
 
 getAccessToken(
   clientId,
+  clientSecret,
   redirectUri,
   "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-top-read user-library-read user-read-recently-played user-read-playback-state user-modify-playback-state streaming user-read-currently-playing user-library-modify playlist-modify-public playlist-modify-private"
 );
