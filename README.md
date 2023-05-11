@@ -5,7 +5,7 @@ This is a web application that lets you search for tracks, play tracks, add trac
 # Features
 
 - Search for tracks
-- Play tracks (###IF YOU HAVE A SPOTIFY PREMIUM ACCOUNT)
+- Play tracks (ONLY IF YOU HAVE A SPOTIFY PREMIUM ACCOUNT)
 - Add tracks to your queue
 - Like/unlike tracks
 - View your liked tracks
